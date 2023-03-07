@@ -4,11 +4,12 @@
   "description": "Resolves Solana wallet names (.sol, .abc, .glow, .backpack, and many others) to wallet addresses and back.",
   "main": "dist/solana-wallet-names.mjs",
   "private": false,
+  "type": "module",
   "scripts": {
     "test": "jest",
-    "build": "vite build",
     "clean": "rm -f dist/*",
-    "publish-new-version": "npm run clean && npm run build && npm publish"
+    "build": "npm run clean && vite build",
+    "publish-new-version": "npm run build && npm publish"
   },
   "keywords": [
     "solana",
