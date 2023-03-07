@@ -1,13 +1,14 @@
 {
   "name": "@portal-payments/solana-wallet-names",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Resolves Solana wallet names (.sol, .abc, .glow, .backpack, and many others) to wallet addresses and back.",
   "main": "dist/index.js",
   "private": false,
   "scripts": {
     "test": "jest",
-    "build": "node esbuild.mjs && echo '✅ Success'",
-    "clean": "rm dist/index.js"
+    "build": "vite build",
+    "clean": "rm -f dist/*",
+    "publish": "npm run clean && npm run build && npm publish"
   },
   "keywords": [
     "solana",
