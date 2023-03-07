@@ -12,11 +12,7 @@ import type { MainDomain } from "@onsol/tldparser/dist/types/state/main-domain";
 import type { ProfilePictureResponse } from "./types";
 import { getProfilePicture as getProfilePictureUsingSolanaPFPStandard } from "@solflare-wallet/pfp";
 
-const twitterBearerToken = process.env.TWITTER_API_KEY_BEARER_TOKEN || null;
-
-if (!twitterBearerToken) {
-  throw new Error(`Please set TWITTER_API_KEY_BEARER_TOKEN in .env`);
-}
+const log = console.log;
 
 interface WalletNameAndProfilePicture {
   walletName: string;
@@ -28,7 +24,10 @@ interface WalletAddressAndProfilePicture {
   profilePicture: string;
 }
 
-const getTwitterProfilePicture = async (twitterHandle: string) => {
+const getTwitterProfilePicture = async (
+  twitterBearerToken: string,
+  twitterHandle: string
+) => {
   const responseBody = await http.get(
     `https://api.twitter.com/2/users/by/username/${twitterHandle}?user.fields=profile_image_url`,
     { Authorization: `Bearer ${twitterBearerToken}` }
@@ -219,15 +218,26 @@ export const walletToDotBackpack = async (
 
 export const twitterHandleToWalletAndProfilePicture = async (
   connection: Connection,
+  twitterBearerToken: string | null = null,
   twitterHandle: string
 ): Promise<WalletAddressAndProfilePicture> => {
   // Normalise the @ symbol. We don't need it.
+
   if (twitterHandle.startsWith("@")) {
     twitterHandle = twitterHandle.slice(1);
   }
   try {
     const registry = await getTwitterRegistry(connection, twitterHandle);
-    const profilePicture = await getTwitterProfilePicture(twitterHandle);
+    let profilePicture = null;
+
+    if (twitterBearerToken) {
+      if (twitterBearerToken) {
+        profilePicture = await getTwitterProfilePicture(
+          twitterBearerToken,
+          twitterHandle
+        );
+      }
+    }
     return {
       walletAddress: registry.owner.toBase58(),
       profilePicture,
@@ -269,7 +279,8 @@ export const walletToTwitterHandle = async (
 export const walletNameToAddressAndProfilePicture = async (
   // export const walletNameToAddressAndProfilePictureAndProfilePicture = async (
   connection: Connection,
-  walletName: string
+  walletName: string,
+  twitterBearerToken: string | null = null
 ): Promise<WalletAddressAndProfilePicture> => {
   // This seems to be the nicest maintained and less land-grab naming service
   // It also has multiple TLDs
@@ -305,7 +316,11 @@ export const walletNameToAddressAndProfilePicture = async (
   }
   if (walletName.startsWith("@")) {
     walletAddressAndProfilePicture =
-      await twitterHandleToWalletAndProfilePicture(connection, walletName);
+      await twitterHandleToWalletAndProfilePicture(
+        connection,
+        twitterBearerToken,
+        walletName
+      );
   }
   return walletAddressAndProfilePicture;
 };

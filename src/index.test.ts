@@ -20,6 +20,8 @@ import {
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
 
+const log = console.log;
+
 dotenv.config();
 
 let rpcURL: string | null = null;
@@ -29,6 +31,15 @@ if (process.env.RPC_URL) {
 
 if (!rpcURL) {
   throw new Error("Please set RPC_URL in .env file");
+}
+
+let twitterBearerToken: string | null = null;
+if (process.env.TWITTER_BEARER_TOKEN) {
+  twitterBearerToken = process.env.TWITTER_BEARER_TOKEN;
+}
+
+if (!twitterBearerToken) {
+  throw new Error("Please set TWITTER_BEARER_TOKEN in .env file");
 }
 
 let backpackJWT: string | null = null;
@@ -116,6 +127,7 @@ describe(`names to wallet`, () => {
     test(`Finds @mikemaccana's wallet`, async () => {
       const wallet = await twitterHandleToWalletAndProfilePicture(
         connection,
+        twitterBearerToken,
         "mikemaccana"
       );
       expect(wallet).toEqual({
@@ -128,6 +140,7 @@ describe(`names to wallet`, () => {
     test(`Finds @mikemaccana's wallet (with the @ included)`, async () => {
       const wallet = await twitterHandleToWalletAndProfilePicture(
         connection,
+        twitterBearerToken,
         "@mikemaccana"
       );
       expect(wallet).toEqual({
@@ -137,9 +150,22 @@ describe(`names to wallet`, () => {
       });
     });
 
+    test(`Finds @mikemaccana's wallet (with the @ included) without a Twitter bearer token`, async () => {
+      const wallet = await twitterHandleToWalletAndProfilePicture(
+        connection,
+        null,
+        "@mikemaccana"
+      );
+      expect(wallet).toEqual({
+        profilePicture: null,
+        walletAddress: MIKES_WALLET,
+      });
+    });
+
     test(`Returns null for a bad Twitter handle`, async () => {
       const wallet = await twitterHandleToWalletAndProfilePicture(
         connection,
+        null,
         "jdhfkljsdghghsflkghfkljgshjfgl"
       );
       expect(wallet).toEqual({ profilePicture: null, walletAddress: null });
