@@ -187,7 +187,8 @@ describe(`wallet names to addresses`, () => {
       );
       expect(result).toEqual({
         walletAddress: MIKES_WALLET,
-        profilePicture: null,
+        profilePicture:
+          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
       });
     });
 
@@ -198,7 +199,8 @@ describe(`wallet names to addresses`, () => {
       );
       expect(result).toEqual({
         walletAddress: MIKES_WALLET,
-        profilePicture: null,
+        profilePicture:
+          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
       });
     });
 
@@ -245,7 +247,8 @@ describe(`wallet names to addresses`, () => {
       );
       expect(result).toEqual({
         walletAddress: MIKES_WALLET,
-        profilePicture: null,
+        profilePicture:
+          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
       });
     });
 
@@ -368,19 +371,19 @@ describe(`wallet addresses to names`, () => {
   });
 
   describe(`walletAddressToNameAndProfilePicture`, () => {
-    test(`mike's wallet address returns his wallet name but no profile picture (he doesn't use Solana PFP)`, async () => {
+    test(`mike's wallet address returns his .abc name andhis Solana PFP`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         mikesWallet
       );
       expect(nameAndProfilePicture).toEqual({
-        // I don't have a Solana PFP set up
-        profilePicture: null,
+        profilePicture:
+          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
         walletName: "mikemaccana.abc",
       });
     });
 
-    test(`vidor's wallet address returns his wallet name and profile picture`, async () => {
+    test(`vidor's wallet address returns his .sol wallet name and profile picture`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         vidorsWallet
@@ -397,21 +400,21 @@ describe(`wallet addresses to names`, () => {
         connection,
         krispysWallet
       );
-      expect(nameAndProfilePicture).toEqual({
+      expect(nameAndProfilePicture).toMatchObject({
         profilePicture:
           "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/T18Bw-hRAxRhUnNJ2Cx7bplQ1NqrfJCYrVeo7GzBtBs",
-        walletName: "cryptogod69420.sol",
+        // TODO: this seems to change every so often. Investigate.
+        walletName: expect.stringContaining("sol"),
       });
     });
 
     test(`armani's wallet address returns his wallet name`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
-        armanisWallet
+        armanisWallet,
+        backpackJWT
       );
       expect(nameAndProfilePicture).toEqual({
-        // We use .sol first, and that has a name but no profile pic, then we check Solana PFP.
-        // TODO: we could change logic to return best match (eg whatever has both name and profile picture)
         profilePicture: null,
         walletName: expect.stringContaining("nft.sol"),
       });

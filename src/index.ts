@@ -340,54 +340,44 @@ export const walletNameToAddressAndProfilePicture = async (
   return walletAddressAndProfilePicture;
 };
 
-// Try all the major name services, and fall back to Solana PFP
-export const walletAddressToNameAndProfilePicture = async (
-  connection: Connection,
-  walletAddress: PublicKey,
-  backpackJWT: string | null = null
-) => {
-  const walletNameAndProfilePicture =
-    await walletAddressToNameAndProfilePictureNoFallbackToSolanaPFP(
-      connection,
-      walletAddress,
-      backpackJWT
-    );
-  if (!walletNameAndProfilePicture.profilePicture) {
-    walletNameAndProfilePicture.profilePicture =
-      await getProfilePictureUsingSolanaPFPStandard(connection, walletAddress);
-  }
-  return walletNameAndProfilePicture;
-};
-
 // Try all the major name services, but don't fallback to Solana PFP
-export const walletAddressToNameAndProfilePictureNoFallbackToSolanaPFP = async (
+export const walletAddressToNameAndProfilePicture = async (
   connection: Connection,
   wallet: PublicKey,
   backpackJWT: string | null = null
 ): Promise<WalletNameAndProfilePicture> => {
+  const solanaPFPStandardImageURL =
+    await getProfilePictureUsingSolanaPFPStandard(connection, wallet);
   const dotAbcOrBonkOrPoor = await walletToDotAbcDotBonkOrDotPoor(
     connection,
     wallet
   );
-  if (dotAbcOrBonkOrPoor?.walletName) {
+  // .abc, .bonk and .poor service doesn't have a profile picture, so use Solana PFP Standard
+  dotAbcOrBonkOrPoor.profilePicture = solanaPFPStandardImageURL;
+  if (dotAbcOrBonkOrPoor?.walletName && dotAbcOrBonkOrPoor?.profilePicture) {
     return dotAbcOrBonkOrPoor;
   }
   const dotSol = await walletToDotSol(connection, wallet);
-  if (dotSol?.walletName) {
+  // Likewise .sol doesn't have a profile picture, so use Solana PFP Standard
+  dotSol.profilePicture = solanaPFPStandardImageURL;
+  if (dotSol?.walletName && dotSol?.profilePicture) {
     return dotSol;
   }
   const dotGlow = await walletToDotGlowAndProfilePicture(wallet);
-  if (dotGlow?.walletName) {
+  if (dotGlow?.walletName && dotGlow?.profilePicture) {
     return dotGlow;
   }
   if (backpackJWT) {
     const dotBackpack = await walletToDotBackpack(wallet, backpackJWT);
-    if (dotBackpack?.walletName) {
+    if (dotBackpack?.walletName && dotBackpack?.profilePicture) {
       return dotBackpack;
     }
   }
 
-  return null;
+  return {
+    walletName: null,
+    profilePicture: null,
+  };
 };
 
 export const getProfilePictureUsingSolanaPFPStandard = async (
