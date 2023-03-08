@@ -415,8 +415,8 @@ describe(`wallet addresses to names`, () => {
         backpackJWT
       );
       expect(nameAndProfilePicture).toEqual({
-        profilePicture: null,
-        walletName: expect.stringContaining("nft.sol"),
+        profilePicture: "https://swr.xnfts.dev/avatars/armani",
+        walletName: "armani.backpack",
       });
     });
   });
