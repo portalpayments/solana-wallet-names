@@ -284,7 +284,6 @@ export const walletToTwitterHandle = async (
 };
 
 export const walletNameToAddressAndProfilePicture = async (
-  // export const walletNameToAddressAndProfilePictureAndProfilePicture = async (
   connection: Connection,
   walletName: string,
   twitterBearerToken: string | null = null
