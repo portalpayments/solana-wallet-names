@@ -20,7 +20,7 @@
     "PFP"
   ],
   "author": "Mike MacCana <mike@getportal.app",
-  "license": "ISC",
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
