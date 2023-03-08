@@ -222,7 +222,8 @@ describe(`names to wallet`, () => {
     test(`@mikemaccana`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
-        "@mikemaccana"
+        "@mikemaccana",
+        twitterBearerToken
       );
       expect(result).toEqual({
         walletAddress: MIKES_WALLET,
@@ -231,9 +232,6 @@ describe(`names to wallet`, () => {
       });
     });
   });
-
-  // TODO: fetch creates some open handles issues here. Fix them.
-  // No, sleep() won't work.
 });
 
 describe(`wallets to names`, () => {

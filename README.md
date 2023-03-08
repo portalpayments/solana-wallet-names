@@ -42,7 +42,7 @@ Add the following environment variables:
 
 ```
 RPC_URL="https://some-solana-rpc-url"
-TWITTER_API_KEY_BEARER_TOKEN="A very long Twitter API bearer token"
+TWITTER_BEARER_TOKEN="A very long Twitter API bearer token"
 ```
 
 
