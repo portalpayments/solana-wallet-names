@@ -30,7 +30,8 @@ Wallet names are a convenient alternative for wallet addresses. However **wallet
 
 Ensure users are aware that wallet names do not assert identity:
 
-> **Warning:** there is no guarantee that (walletName) represents a particular individual or organisation.
+> **Warning**
+> There is no guarantee that (walletName) represents a particular individual or organisation.
 
 Use the [Solana Verification]() library to assert individual or organisation identity and/or get profile pictures that are proven match the identity of the wallet holder. 
 
