@@ -11,9 +11,11 @@ import * as http from "./http-client";
 import { TldParser } from "@onsol/tldparser";
 import type { MainDomain } from "@onsol/tldparser/dist/types/state/main-domain";
 import type { ProfilePictureResponse } from "./types";
-import { getProfilePicture as getProfilePictureUsingSolanaPFPStandard } from "@solflare-wallet/pfp";
+// Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
+import { getProfilePicture as getProfilePictureUsingSolanaPFPStandardUpstream } from "@solflare-wallet/pfp";
 
 const log = console.log;
+const stringify = (object: unknown) => JSON.stringify(object, null, 2);
 
 interface WalletNameAndProfilePicture {
   walletName: string;
@@ -126,7 +128,7 @@ export const walletToDotGlowAndProfilePicture = async (wallet: PublicKey) => {
 };
 
 // See https://www.quicknode.com/guides/solana-development/accounts-and-data/how-to-query-solana-naming-service-domains-sol/#set-up-your-environment
-export const dotSolDomainToWallet = async (
+export const dotSolToWallet = async (
   connection: Connection,
   dotSolDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
@@ -156,7 +158,9 @@ export const walletToDotSol = async (
 ): Promise<WalletNameAndProfilePicture> => {
   try {
     const ownerWallet = new PublicKey(wallet);
+
     const allDomainKeys = await getAllDomains(connection, ownerWallet);
+    log(`>>> allDomainKeys`, allDomainKeys);
     if (!allDomainKeys.length) {
       return null;
     }
@@ -302,7 +306,7 @@ export const walletNameToAddressAndProfilePicture = async (
   // Requires people to buy a custom token
   // and is complex to set up, but was more popular
   if (walletName.endsWith(".sol")) {
-    walletAddressAndProfilePicture = await dotSolDomainToWallet(
+    walletAddressAndProfilePicture = await dotSolToWallet(
       connection,
       walletName
     );
@@ -323,44 +327,87 @@ export const walletNameToAddressAndProfilePicture = async (
         walletName
       );
   }
+  // Fall back to Solana PFP
+  log(`>>>> 1 profilePicture`, walletAddressAndProfilePicture.profilePicture);
+  if (!walletAddressAndProfilePicture.profilePicture) {
+    const solanaPFPUrl = await getProfilePictureUsingSolanaPFPStandard(
+      connection,
+      new PublicKey(walletAddressAndProfilePicture.walletAddress)
+    );
+    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl;
+    log(`>>>> 2 profilePicture`, solanaPFPUrl);
+  }
   return walletAddressAndProfilePicture;
 };
 
+// Try all the major name services, and fall back to Solana PFP
 export const walletAddressToNameAndProfilePicture = async (
   connection: Connection,
-  wallet: PublicKey
+  walletAddress: PublicKey,
+  backpackJWT: string | null = null
+) => {
+  const walletNameAndProfilePicture =
+    await walletAddressToNameAndProfilePictureNoFallbackToSolanaPFP(
+      connection,
+      walletAddress,
+      backpackJWT
+    );
+  if (!walletNameAndProfilePicture.profilePicture) {
+    walletNameAndProfilePicture.profilePicture =
+      await getProfilePictureUsingSolanaPFPStandard(connection, walletAddress);
+  }
+  return walletNameAndProfilePicture;
+};
+
+// Try all the major name services, but don't fallback to Solana PFP
+export const walletAddressToNameAndProfilePictureNoFallbackToSolanaPFP = async (
+  connection: Connection,
+  wallet: PublicKey,
+  backpackJWT: string | null = null
 ): Promise<WalletNameAndProfilePicture> => {
-  // Order chosen to match walletNameToAddressAndProfilePicture() above.
   const dotAbcOrBonkOrPoor = await walletToDotAbcDotBonkOrDotPoor(
     connection,
     wallet
   );
-  if (dotAbcOrBonkOrPoor) {
+  if (dotAbcOrBonkOrPoor?.walletName) {
+    log(`found dot abc`);
     return dotAbcOrBonkOrPoor;
   }
   const dotSol = await walletToDotSol(connection, wallet);
-  if (dotSol) {
+  if (dotSol?.walletName) {
+    log(`found dot sol`);
     return dotSol;
   }
   const dotGlow = await walletToDotGlowAndProfilePicture(wallet);
-  if (dotGlow) {
+  if (dotGlow?.walletName) {
+    log(`found dot glow`);
     return dotGlow;
   }
+  if (backpackJWT) {
+    const dotBackpack = await walletToDotBackpack(wallet, backpackJWT);
+    if (dotBackpack?.walletName) {
+      log(`found dot backpack`);
+      return dotBackpack;
+    }
+  }
+
   return null;
 };
 
-export const getProfilePicture = async (
+export const getProfilePictureUsingSolanaPFPStandard = async (
   connection: Connection,
   walletPubkey: PublicKey
 ) => {
   // https://www.npmjs.com/package/@solflare-wallet/pfp
-  const response = (await getProfilePictureUsingSolanaPFPStandard(
+  const response = (await getProfilePictureUsingSolanaPFPStandardUpstream(
     connection,
     walletPubkey,
     {
       fallback: false,
     }
   )) as ProfilePictureResponse;
+
+  log(`response from solan pfp`, stringify(response));
 
   // This API returns the Netscape 'broken' image instead of null when 'fallback' is set to false.
   // (also if we turned 'fallback' on, fallback images are ugly gravatar style autogenerated images)

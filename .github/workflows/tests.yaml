@@ -1,0 +1,38 @@
+# From https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs#using-the-nodejs-starter-workflow
+name: Node.js CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    env:
+      RPC_URL: ${{ secrets.RPC_URL }}
+      TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
+      BACKPACK_JWT: ${{ secrets.BACKPACK_JWT }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Install Solana
+      - run: sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+      - run: export PATH="~/.local/share/solana/install/active_release/bin:$PATH"
+      # Install everything
+      - run: npm ci
+      # Build
+      - run: npm run build
+      # Run tests
+      - run: npm test
