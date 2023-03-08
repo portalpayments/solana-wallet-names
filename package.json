@@ -34,7 +34,6 @@
     "@bonfida/spl-name-service": "^0.1.66",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
-    "@geut/esbuild-plugin-brode": "^2.0.14",
     "@onsol/tldparser": "^0.4.3",
     "@solana/web3.js": "^1.73.3",
     "@solflare-wallet/pfp": "^0.1.0",
