@@ -217,7 +217,7 @@ describe(`wallet names to addresses`, () => {
     test(`cryptogod69420.sol`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
-        expect.stringContaining(".sol")
+        "cryptogod69420.sol"
       );
       expect(result).toEqual({
         walletAddress: KRISPYS_WALLET,
