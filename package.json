@@ -4,7 +4,6 @@
   "description": "Resolves Solana wallet names (.sol, .abc, .glow, .backpack, and many others) to wallet addresses and back.",
   "main": "dist/index.js",
   "private": false,
-  "type": "module",
   "scripts": {
     "test": "jest",
     "clean": "rm -f dist/*",
