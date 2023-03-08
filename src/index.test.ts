@@ -264,6 +264,18 @@ describe(`wallet names to addresses`, () => {
           "https://pbs.twimg.com/profile_images/1623624287365091331/3zgMY9KG_normal.jpg",
       });
     });
+
+    test(`armani.backpack`, async () => {
+      const result = await walletNameToAddressAndProfilePicture(
+        connection,
+        "armani.backpack",
+        twitterBearerToken
+      );
+      expect(result).toEqual({
+        walletAddress: ARMANIS_WALLET,
+        profilePicture: null,
+      });
+    });
   });
 });
 
