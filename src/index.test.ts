@@ -8,18 +8,18 @@ import {
   WALLET_WITH_NO_NAME,
 } from "./constants";
 import {
-  twitterHandleToWalletAndProfilePicture,
+  twitterHandleToWallet,
   dotSolToWallet,
-  dotBackpackToWallet as dotBackpackToWalletAddressAndProfilePicture,
-  dotGlowToWalletAndProfilePicture as dotGlowToWalletAddressAndProfilePicture,
+  dotBackpackToWallet,
+  dotGlowToWallet,
   dotAbcDotBonkOrDotPoorToWallet,
   walletNameToAddressAndProfilePicture,
   walletToDotAbcDotBonkOrDotPoor,
-  walletToDotGlowAndProfilePicture,
+  walletToDotGlow,
   walletToDotSol,
   walletToDotBackpack,
   walletToTwitterHandle,
-  walletAddressToNameAndProfilePicture,
+  walletAddressToName,
 } from ".";
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
@@ -84,8 +84,9 @@ describe(`wallet names to addresses`, () => {
 
   describe(`dotBackpackToWallet`, () => {
     test(`mikemaccana.backpack resolves`, async () => {
-      const wallet = await dotBackpackToWalletAddressAndProfilePicture(
-        "mikemaccana.backpack"
+      const wallet = await dotBackpackToWallet(
+        "mikemaccana.backpack",
+        backpackJWT
       );
       expect(wallet).toEqual({
         profilePicture: null,
@@ -93,22 +94,26 @@ describe(`wallet names to addresses`, () => {
       });
     });
 
-    test(`genry.backpack does not resolve`, async () => {
-      const wallet = await dotBackpackToWalletAddressAndProfilePicture(
-        "genry.backpack"
-      );
+    test(`armani.backpack resolves`, async () => {
+      const wallet = await dotBackpackToWallet("armani.backpack", backpackJWT);
       expect(wallet).toEqual({
-        profilePicture: null,
-        walletAddress: null,
+        profilePicture: "https://swr.xnfts.dev/avatars/armani",
+        walletAddress: ARMANIS_WALLET,
+      });
+    });
+
+    test(`genry.backpack resolves`, async () => {
+      const wallet = await dotBackpackToWallet("genry.backpack", backpackJWT);
+      expect(wallet).toEqual({
+        profilePicture: "https://swr.xnfts.dev/avatars/genryqowel",
+        walletAddress: "7dQhoH4Ja26DSrzRvvsYhPLf9DsVj5jX74AZJim4WVpk",
       });
     });
   });
 
   describe(`dotGlowToWallet`, () => {
     test(`mikemaccana.glow resolves`, async () => {
-      const wallet = await dotGlowToWalletAddressAndProfilePicture(
-        "mikemaccana.glow"
-      );
+      const wallet = await dotGlowToWallet("mikemaccana.glow");
       expect(wallet).toEqual({
         profilePicture:
           "https://cdn.glow.app/g/er/ae01b288-3bc6-4248-ac49-a6b6c6132fb6",
@@ -132,7 +137,7 @@ describe(`wallet names to addresses`, () => {
 
   describe(`atTwitterToWallet`, () => {
     test(`Finds @mikemaccana's wallet`, async () => {
-      const wallet = await twitterHandleToWalletAndProfilePicture(
+      const wallet = await twitterHandleToWallet(
         connection,
         twitterBearerToken,
         "mikemaccana"
@@ -145,7 +150,7 @@ describe(`wallet names to addresses`, () => {
     });
 
     test(`Finds @mikemaccana's wallet (with the @ included)`, async () => {
-      const wallet = await twitterHandleToWalletAndProfilePicture(
+      const wallet = await twitterHandleToWallet(
         connection,
         twitterBearerToken,
         "@mikemaccana"
@@ -158,7 +163,7 @@ describe(`wallet names to addresses`, () => {
     });
 
     test(`Finds @mikemaccana's wallet (with the @ included) without a Twitter bearer token`, async () => {
-      const wallet = await twitterHandleToWalletAndProfilePicture(
+      const wallet = await twitterHandleToWallet(
         connection,
         null,
         "@mikemaccana"
@@ -170,7 +175,7 @@ describe(`wallet names to addresses`, () => {
     });
 
     test(`Returns null for a bad Twitter handle`, async () => {
-      const wallet = await twitterHandleToWalletAndProfilePicture(
+      const wallet = await twitterHandleToWallet(
         connection,
         null,
         "jdhfkljsdghghsflkghfkljgshjfgl"
@@ -243,7 +248,9 @@ describe(`wallet names to addresses`, () => {
     test(`mikemaccana.backpack`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
-        "mikemaccana.backpack"
+        "mikemaccana.backpack",
+        null,
+        backpackJWT
       );
       expect(result).toEqual({
         walletAddress: MIKES_WALLET,
@@ -269,7 +276,8 @@ describe(`wallet names to addresses`, () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
         "armani.backpack",
-        twitterBearerToken
+        twitterBearerToken,
+        backpackJWT
       );
       expect(result).toEqual({
         walletAddress: ARMANIS_WALLET,
@@ -313,7 +321,7 @@ describe(`wallet addresses to names`, () => {
 
   describe(`walletToDotGlow`, () => {
     test(`mike's wallet resolves to .glow domain`, async () => {
-      const result = await walletToDotGlowAndProfilePicture(mikesWallet);
+      const result = await walletToDotGlow(mikesWallet);
       expect(result).toEqual({
         profilePicture:
           "https://cdn.glow.app/g/er/ae01b288-3bc6-4248-ac49-a6b6c6132fb6",
@@ -384,7 +392,7 @@ describe(`wallet addresses to names`, () => {
 
   describe(`walletAddressToNameAndProfilePicture`, () => {
     test(`mike's wallet address returns his .abc name and his Solana PFP`, async () => {
-      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
+      const nameAndProfilePicture = await walletAddressToName(
         connection,
         mikesWallet
       );
@@ -396,7 +404,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`vidor's wallet address returns his .sol wallet name and profile picture`, async () => {
-      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
+      const nameAndProfilePicture = await walletAddressToName(
         connection,
         vidorsWallet
       );
@@ -408,7 +416,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`krispy's wallet address returns his wallet name and profile picture`, async () => {
-      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
+      const nameAndProfilePicture = await walletAddressToName(
         connection,
         krispysWallet
       );
@@ -421,7 +429,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`armani's wallet address returns his wallet name`, async () => {
-      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
+      const nameAndProfilePicture = await walletAddressToName(
         connection,
         armanisWallet,
         backpackJWT

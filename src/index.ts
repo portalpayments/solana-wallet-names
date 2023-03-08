@@ -98,7 +98,7 @@ export const walletToDotAbcDotBonkOrDotPoor = async (
 
 // https://docs.glow.app/reference/resolve-glow-id
 // The 'API' node module has a bunch of issues running in the browser so just use http module directly
-export const dotGlowToWalletAndProfilePicture = async (
+export const dotGlowToWallet = async (
   dotGlowDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
   const dotGlowUserName = removeExtension(dotGlowDomain, "glow");
@@ -113,7 +113,7 @@ export const dotGlowToWalletAndProfilePicture = async (
   };
 };
 
-export const walletToDotGlowAndProfilePicture = async (wallet: PublicKey) => {
+export const walletToDotGlow = async (wallet: PublicKey) => {
   const walletString = wallet.toBase58();
   const responseBody = await http.get(
     `https://api.glow.app/glow-id/resolve?wallet=${walletString}`
@@ -183,15 +183,30 @@ export const walletToDotSol = async (
 };
 
 export const dotBackpackToWallet = async (
-  dotBackpackDomainName: string
+  dotBackpackDomainName: string,
+  jwt: string
 ): Promise<WalletAddressAndProfilePicture> => {
   dotBackpackDomainName = removeExtension(dotBackpackDomainName, "backpack");
-  const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users/primarySolPubkey/${dotBackpackDomainName}`;
-  const responseBody = await http.get(backpackAPIEndpoint);
-  const result = responseBody.publicKey || null;
+  const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users?usernamePrefix=${dotBackpackDomainName}&blockchain=solana&limit=1`;
+  const responseBody = await http.get(backpackAPIEndpoint, {
+    cookie: `jwt=${jwt}`,
+  });
+  log(`>>>>`, responseBody);
+  const users = responseBody?.users || null;
+  if (!users?.length) {
+    return {
+      walletAddress: null,
+      profilePicture: null,
+    };
+  }
+  const firstUser = users[0];
+  const profilePicture = firstUser.image || null;
+  const walletAddress =
+    firstUser.public_keys.find((publicKey) => publicKey.blockchain === "solana")
+      ?.publicKey || null;
   return {
-    walletAddress: result,
-    profilePicture: null,
+    walletAddress,
+    profilePicture,
   };
 };
 
@@ -223,7 +238,7 @@ export const walletToDotBackpack = async (
   };
 };
 
-export const twitterHandleToWalletAndProfilePicture = async (
+export const twitterHandleToWallet = async (
   connection: Connection,
   twitterBearerToken: string | null = null,
   twitterHandle: string
@@ -286,7 +301,8 @@ export const walletToTwitterHandle = async (
 export const walletNameToAddressAndProfilePicture = async (
   connection: Connection,
   walletName: string,
-  twitterBearerToken: string | null = null
+  twitterBearerToken: string | null = null,
+  jwt: string | null = null
 ): Promise<WalletAddressAndProfilePicture> => {
   // This seems to be the nicest maintained and less land-grab naming service
   // It also has multiple TLDs
@@ -313,20 +329,17 @@ export const walletNameToAddressAndProfilePicture = async (
     );
   }
   if (walletName.endsWith(".glow")) {
-    walletAddressAndProfilePicture = await dotGlowToWalletAndProfilePicture(
-      walletName
-    );
+    walletAddressAndProfilePicture = await dotGlowToWallet(walletName);
   }
-  if (walletName.endsWith(".backpack")) {
-    walletAddressAndProfilePicture = await dotBackpackToWallet(walletName);
+  if (walletName.endsWith(".backpack" && jwt)) {
+    walletAddressAndProfilePicture = await dotBackpackToWallet(walletName, jwt);
   }
   if (walletName.startsWith("@")) {
-    walletAddressAndProfilePicture =
-      await twitterHandleToWalletAndProfilePicture(
-        connection,
-        twitterBearerToken,
-        walletName
-      );
+    walletAddressAndProfilePicture = await twitterHandleToWallet(
+      connection,
+      twitterBearerToken,
+      walletName
+    );
   }
   // Use Solana PFP if we have an address but no profile picture
   if (
@@ -343,7 +356,7 @@ export const walletNameToAddressAndProfilePicture = async (
 };
 
 // Try all the major name services, but don't fallback to Solana PFP
-export const walletAddressToNameAndProfilePicture = async (
+export const walletAddressToName = async (
   connection: Connection,
   wallet: PublicKey,
   backpackJWT: string | null = null
@@ -365,7 +378,7 @@ export const walletAddressToNameAndProfilePicture = async (
   if (dotSol?.walletName && dotSol?.profilePicture) {
     return dotSol;
   }
-  const dotGlow = await walletToDotGlowAndProfilePicture(wallet);
+  const dotGlow = await walletToDotGlow(wallet);
   if (dotGlow?.walletName && dotGlow?.profilePicture) {
     return dotGlow;
   }
