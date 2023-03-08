@@ -371,7 +371,7 @@ describe(`wallet addresses to names`, () => {
   });
 
   describe(`walletAddressToNameAndProfilePicture`, () => {
-    test(`mike's wallet address returns his .abc name andhis Solana PFP`, async () => {
+    test(`mike's wallet address returns his .abc name and his Solana PFP`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         mikesWallet
