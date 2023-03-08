@@ -6,20 +6,13 @@ This package resolves wallet names to wallet addresses (and the reverse) across 
 
 Supported **wallet names** are:
 
- - .abc
- - .backpack
- - .bonk
- - .glow
- - .poor
- - .sol
- - @twitter
-
-Supported **profile picture** ('PFPs') come from the following:
-
- - The Solana Profile Picture Standard
- - Glow
- - Backpack
- - Twitter
+ - **.abc** (using Solana PFP standard for profile pictures)
+ - **.backpack** (using Backpack for profile pictures)
+ - **.bonk** (using Solana PFP standard for profile pictures)
+ - **.glow** (using Glow for profile pictures)
+ - **.poor** (using Solana PFP standard for profile pictures)
+ - **.sol** (using Solana PFP standard for profile pictures)
+ - **@twitter** (using Twitter standard for profile pictures)
 
 ## Note: wallet names do not assert identity
 
