@@ -328,8 +328,11 @@ export const walletNameToAddressAndProfilePicture = async (
         walletName
       );
   }
-  // Fall back to Solana PFP
-  if (!walletAddressAndProfilePicture.profilePicture) {
+  // Use Solana PFP if we have an address but no profile picture
+  if (
+    walletAddressAndProfilePicture.walletAddress &&
+    !walletAddressAndProfilePicture.profilePicture
+  ) {
     const solanaPFPUrl = await getProfilePictureUsingSolanaPFPStandard(
       connection,
       new PublicKey(walletAddressAndProfilePicture.walletAddress)
