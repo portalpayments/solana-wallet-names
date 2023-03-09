@@ -186,27 +186,31 @@ export const dotBackpackToWallet = async (
   dotBackpackDomainName: string,
   jwt: string
 ): Promise<WalletAddressAndProfilePicture> => {
-  dotBackpackDomainName = removeExtension(dotBackpackDomainName, "backpack");
-  const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users?usernamePrefix=${dotBackpackDomainName}&blockchain=solana&limit=1`;
+  const dotBackpackUserName = removeExtension(
+    dotBackpackDomainName,
+    "backpack"
+  );
+
+  const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users/${dotBackpackUserName}`;
   const responseBody = await http.get(backpackAPIEndpoint, {
-    cookie: `jwt=${jwt}`,
+    // This endpoint does not need a JWT
   });
   log(`>>>>`, responseBody);
-  const users = responseBody?.users || null;
-  if (!users?.length) {
+
+  // publicKeys isn't an array of publicKeys
+  // it's an array of objects with a publicKey property
+  const publicKeysDetails = responseBody?.publicKeys || null;
+  if (!publicKeysDetails?.length) {
     return {
       walletAddress: null,
       profilePicture: null,
     };
   }
-  const firstUser = users[0];
-  const profilePicture = firstUser.image || null;
-  const walletAddress =
-    firstUser.public_keys.find((publicKey) => publicKey.blockchain === "solana")
-      ?.publicKey || null;
+  const firstPublicKeyDetails = publicKeysDetails[0];
+  const walletAddress = firstPublicKeyDetails.publicKey || null;
   return {
     walletAddress,
-    profilePicture,
+    profilePicture: null,
   };
 };
 
