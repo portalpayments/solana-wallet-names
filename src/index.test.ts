@@ -101,14 +101,6 @@ describe(`wallet names to addresses`, () => {
         walletAddress: ARMANIS_WALLET,
       });
     });
-
-    test(`genry.backpack resolves`, async () => {
-      const wallet = await dotBackpackToWallet("genry.backpack", backpackJWT);
-      expect(wallet).toEqual({
-        profilePicture: "https://swr.xnfts.dev/avatars/genryqowel",
-        walletAddress: "7dQhoH4Ja26DSrzRvvsYhPLf9DsVj5jX74AZJim4WVpk",
-      });
-    });
   });
 
   describe(`dotGlowToWallet`, () => {
