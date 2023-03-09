@@ -191,26 +191,72 @@ export const dotBackpackToWallet = async (
     "backpack"
   );
 
-  const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users/${dotBackpackUserName}`;
-  const responseBody = await http.get(backpackAPIEndpoint, {
-    // This endpoint does not need a JWT
-  });
-  log(`>>>>`, responseBody);
+  // Note xray uses a different endpoint
+  // `https://backpack-api.xnfts.dev/users/${dotBackpackUserName}`;
+  // However that endpoint does not include profile pictures, hwoever it also does not require a JWT
 
-  // publicKeys isn't an array of publicKeys
-  // it's an array of objects with a publicKey property
-  const publicKeysDetails = responseBody?.publicKeys || null;
+  // Also note there is a typo '&blockchain=solanalimit=6' instead of
+  // '&blockchain=solana&limit=6' but the typo version is what backpack app actually uses
+
+  // Also note backpack responses mixes snake_case and CamelCase
+
+  // I suspect the endpoint below API searches only *other* users, ie not the user owning the JWT
+  // hence 0 results for mikemaccana
+  const responseBody = await http.get(
+    `https://backpack-api.xnfts.dev/users?usernamePrefix=${dotBackpackUserName}&blockchain=solanalimit=6`,
+    {
+      cookie: `jwt=${jwt}`,
+    }
+  );
+
+  const users = responseBody?.users || null;
+
+  if (!users) {
+    //
+    return {
+      walletAddress: null,
+      profilePicture: null,
+    };
+  }
+
+  const matchingUser = users.find(
+    (user) => user.username === dotBackpackUserName
+  );
+
+  const profilePicture = matchingUser?.image || null;
+
+  if (!matchingUser) {
+    return {
+      walletAddress: null,
+      profilePicture: null,
+    };
+  }
+
+  const publicKeysDetails = matchingUser.public_keys || null;
+
   if (!publicKeysDetails?.length) {
     return {
       walletAddress: null,
       profilePicture: null,
     };
   }
-  const firstPublicKeyDetails = publicKeysDetails[0];
-  const walletAddress = firstPublicKeyDetails.publicKey || null;
+
+  const solanaPublicKeyDetails = publicKeysDetails.find((publicKeyDetails) => {
+    return publicKeyDetails.blockchain === "solana";
+  });
+
+  if (!solanaPublicKeyDetails) {
+    return {
+      walletAddress: null,
+      profilePicture: null,
+    };
+  }
+
+  const walletAddress = solanaPublicKeyDetails.publicKey || null;
+
   return {
     walletAddress,
-    profilePicture: null,
+    profilePicture,
   };
 };
 
@@ -335,7 +381,7 @@ export const walletNameToAddressAndProfilePicture = async (
   if (walletName.endsWith(".glow")) {
     walletAddressAndProfilePicture = await dotGlowToWallet(walletName);
   }
-  if (walletName.endsWith(".backpack" && jwt)) {
+  if (walletName.endsWith(".backpack") && jwt) {
     walletAddressAndProfilePicture = await dotBackpackToWallet(walletName, jwt);
   }
   if (walletName.startsWith("@")) {

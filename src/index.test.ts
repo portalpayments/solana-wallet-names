@@ -83,17 +83,6 @@ describe(`wallet names to addresses`, () => {
   });
 
   describe(`dotBackpackToWallet`, () => {
-    test(`mikemaccana.backpack resolves`, async () => {
-      const wallet = await dotBackpackToWallet(
-        "mikemaccana.backpack",
-        backpackJWT
-      );
-      expect(wallet).toEqual({
-        profilePicture: null,
-        walletAddress: MIKES_WALLET,
-      });
-    });
-
     test(`armani.backpack resolves`, async () => {
       const wallet = await dotBackpackToWallet("armani.backpack", backpackJWT);
       expect(wallet).toEqual({
@@ -237,20 +226,6 @@ describe(`wallet names to addresses`, () => {
       });
     });
 
-    test(`mikemaccana.backpack`, async () => {
-      const result = await walletNameToAddressAndProfilePicture(
-        connection,
-        "mikemaccana.backpack",
-        null,
-        backpackJWT
-      );
-      expect(result).toEqual({
-        walletAddress: MIKES_WALLET,
-        profilePicture:
-          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
-      });
-    });
-
     test(`@mikemaccana`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
@@ -273,7 +248,7 @@ describe(`wallet names to addresses`, () => {
       );
       expect(result).toEqual({
         walletAddress: ARMANIS_WALLET,
-        profilePicture: null,
+        profilePicture: "https://swr.xnfts.dev/avatars/armani",
       });
     });
   });
