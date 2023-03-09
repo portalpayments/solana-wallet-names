@@ -1,4 +1,5 @@
 import * as esbuild from "esbuild";
+import { dtsPlugin } from "esbuild-plugin-d.ts";
 import { log } from "console";
 
 let buildResult = await esbuild.build({
@@ -13,6 +14,7 @@ let buildResult = await esbuild.build({
   tsconfig: "tsconfig.json",
   outdir: "dist",
   bundle: false,
+  plugins: [dtsPlugin()],
 });
 
 log(buildResult);
