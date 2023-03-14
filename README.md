@@ -40,19 +40,7 @@ All you need is a Solana `Connection` object. Optionally, you can also get a [Tw
 If you have a wallet name, like `mikemaccana.abc`, and you want to get an address and profile picture:
 
 ```typescript
-import {
-  twitterHandleToWalletAndProfilePicture,
-  dotSolDomainToWallet,
-  dotBackpackToWallet as dotBackpackToWalletAddressAndProfilePicture,
-  dotGlowToWalletAndProfilePicture as dotGlowToWalletAddressAndProfilePicture,
-  dotAbcDotBonkOrDotPoorToWallet,
-  walletNameToAddressAndProfilePicture,
-  walletToDotAbcDotBonkOrDotPoor,
-  walletToDotGlowAndProfilePicture,
-  walletToDotSol,
-  walletToDotBackpack,
-  walletToTwitterHandle,
-} from "@portal-payments/solana-wallet-names";
+import { walletNameToAddressAndProfilePicture } from "@portal-payments/solana-wallet-names";
 
 const walletAddressAndProfilePicture = await walletNameToAddressAndProfilePicture(
   // A Solana connection
@@ -76,6 +64,8 @@ const walletAddressAndProfilePicture = await walletNameToAddressAndProfilePictur
 If you have a wallet address, like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`, and you want to get an address and profile picture:
 
 ```typescript
+import { walletAddressToNameAndProfilePicture } from "@portal-payments/solana-wallet-names";
+
 const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
   // A Solana connection
   connection,

@@ -1,6 +1,6 @@
 {
   "name": "@portal-payments/solana-wallet-names",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Resolves Solana wallet names (.sol, .abc, .glow, .backpack, and many others) to wallet addresses and back.",
   "main": "dist/index.js",
   "private": false,
