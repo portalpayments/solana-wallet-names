@@ -89,14 +89,6 @@ const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
 }
 ```
 
-## Fallback Pictures
-
-By default these libraries return `null` for missing profile pictures, but can also make a pleasant-looking decoration with:
-
-```
-await getGradient(contact.walletAddress);
-```
-
 ## Limits
 
 - In cases where addresses can have multiple account names, only the first or 'main' account name is returned.
