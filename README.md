@@ -29,7 +29,13 @@ Ensure users are aware that wallet names do not assert identity:
 > **Warning**
 > There is no guarantee that (walletName) represents a particular individual or organisation.
 
-Use the [Solana Verification]() library to assert individual or organisation identity and/or get profile pictures that are proven match the identity of the wallet holder. 
+Use the [Solana Verification]() (coming 🔜) library to assert individual or organisation identity and/or get profile pictures that are proven match the identity of the wallet holder. 
+
+# Installation
+
+```
+npm i "@portal-payments/solana-wallet-names"
+```
 
 # Setup
 
