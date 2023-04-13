@@ -226,6 +226,18 @@ describe(`wallet names to addresses`, () => {
       });
     });
 
+    test(`victor.glow`, async () => {
+      const result = await walletNameToAddressAndProfilePicture(
+        connection,
+        "victor.glow"
+      );
+      expect(result).toEqual({
+        walletAddress: "vicFprL4kcqWTykrdz6icjv2re4CbM5iq3aHtoJmxrh",
+        profilePicture:
+          "https://cdn.glow.app/g/7z/40bc4c8e-34a4-4e6c-a022-a1a240e0af41",
+      });
+    });
+
     test(`@mikemaccana`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,

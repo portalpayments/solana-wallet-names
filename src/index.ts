@@ -184,22 +184,38 @@ export const walletToDotSol = async (
 
 export const dotBackpackToWallet = async (
   dotBackpackDomainName: string,
-  jwt: string
+  jwt: string | null = null
 ): Promise<WalletAddressAndProfilePicture> => {
+  // Note backpack API responses mix snake_case and CamelCase
   const dotBackpackUserName = removeExtension(
     dotBackpackDomainName,
     "backpack"
   );
 
-  // Note xray uses a different endpoint
-  // `https://backpack-api.xnfts.dev/users/${dotBackpackUserName}`;
-  // However that endpoint does not include profile pictures, hwoever it also does not require a JWT
+  // By default use the open public endpoint
+  if (!jwt) {
+    // Note xray uses a different endpoint
+    // ;
+    // However that endpoint does not include profile pictures, however it also does not require a JWT
+    //
+    // Have chased in the Backpack Discord
+    const responseBody = await http.get(
+      `https://backpack-api.xnfts.dev/users/${dotBackpackUserName}`
+    );
+    // publicKeys isn't an array of publicKeys
+    // it's an array of objects with a publicKey property. Euw.
+    const publicKeysDetails = responseBody?.publicKeys || null;
+    const firstPublicKeyDetails = publicKeysDetails[0];
+    const walletAddress = firstPublicKeyDetails.publicKey || null;
+    return {
+      walletAddress,
+      profilePicture: null,
+    };
+  }
 
+  // Use a JWT if we want profile pictures
   // Also note there is a typo '&blockchain=solanalimit=6' instead of
   // '&blockchain=solana&limit=6' but the typo version is what backpack app actually uses
-
-  // Also note backpack responses mixes snake_case and CamelCase
-
   // I suspect the endpoint below API searches only *other* users, ie not the user owning the JWT
   // hence 0 results for mikemaccana
   const responseBody = await http.get(
@@ -264,8 +280,15 @@ export const dotBackpackToWallet = async (
 // and is hidden
 export const walletToDotBackpack = async (
   wallet: PublicKey,
-  jwt: string
+  jwt: string | null = null
 ): Promise<WalletNameAndProfilePicture> => {
+  // Sadly there's no public version of this API
+  if (!jwt) {
+    return {
+      walletName: null,
+      profilePicture: null,
+    };
+  }
   const walletString = wallet.toBase58();
   const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users?usernamePrefix=${walletString}`;
   const responseBody = await http.get(backpackAPIEndpoint, {
