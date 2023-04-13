@@ -1,6 +1,6 @@
 {
   "name": "@portal-payments/solana-wallet-names",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Resolves Solana wallet names (.sol, .abc, .glow, .backpack, and many others) to wallet addresses and back.",
   "main": "dist/index.js",
   "private": false,
@@ -10,6 +10,10 @@
     "build": "npm run clean && node esbuild.mjs",
     "publish-new-version": "npm run build && npm publish"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/portalpayments/solana-wallet-names.git"
+  },
   "keywords": [
     "solana",
     "web3",
@@ -18,13 +22,13 @@
     "profile picture",
     "PFP"
   ],
-  "author": "Mike MacCana <mike@getportal.app",
+  "author": "Mike MacCana <mike@getportal.app>",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "@types/jest": "^29.4.0",
+    "@types/jest": "^29.5.0",
     "esbuild": "^0.17.11",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
