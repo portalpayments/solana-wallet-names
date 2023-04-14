@@ -22,14 +22,20 @@ Supported **wallet names** are:
 Wallet names are a convenient alternative for wallet addresses. However **wallet names do not assert identity**. The services used in this library do not check the real-world identity of people registering wallet names.
  - Many wallet names that sounds like real world people and organisations are not those organisation - `barclays.sol` isn't Barclays, `cashapp.sol` isn't cashapp, `joemccann.sol` isn't the well known Solana investor. This isn't just Solana, all blockchain name services and DNS itself operate this way. Having a particular name registered simply means the holder was the first person to register that name.
  - Wallet name services that include given and family names do not check that the person has identification matching the given and family names.
- - Profle picture services do not check that the person depicted matches the owner of the wallet
+ - Profile picture services do not check that the person depicted matches the owner of the wallet
 
 Ensure users are aware that wallet names do not assert identity:
 
 > **Warning**
 > There is no guarantee that (walletName) represents a particular individual or organisation.
 
-Use the [Solana Verification]() library to assert individual or organisation identity and/or get profile pictures that are proven match the identity of the wallet holder. 
+Use the [Solana Verification]() (coming 🔜) library to assert individual or organisation identity and/or get profile pictures that are proven match the identity of the wallet holder. 
+
+# Installation
+
+```
+npm i "@portal-payments/solana-wallet-names"
+```
 
 # Setup
 
@@ -81,14 +87,6 @@ const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
   walletName: "mikemaccana.sol",
   profilePicture: https://some.url/filename.ext,
 }
-```
-
-## Fallback Pictures
-
-By default these libraries return `null` for missing profile pictures, but can also make a pleasant-looking decoration with:
-
-```
-await getGradient(contact.walletAddress);
 ```
 
 ## Limits
