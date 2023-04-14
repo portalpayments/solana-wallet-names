@@ -14,6 +14,7 @@ import type { ProfilePictureResponse } from "./types";
 // Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
 import { getProfilePicture as getProfilePictureUsingSolanaPFPStandardUpstream } from "@solflare-wallet/pfp";
 
+// Just for debugging. Keep them around as they're useful sometimes.
 const log = console.log;
 const stringify = (object: unknown) => JSON.stringify(object, null, 2);
 
@@ -276,13 +277,16 @@ export const dotBackpackToWallet = async (
   };
 };
 
-// TODO: looks like a this endpoint in't finished, it doesn't work for all backpack users
+// TODO: looks like a this endpoint isn't finished, it doesn't work for all backpack users
 // and is hidden
 export const walletToDotBackpack = async (
   wallet: PublicKey,
   jwt: string | null = null
 ): Promise<WalletNameAndProfilePicture> => {
   // Sadly there's no public version of this API
+  // Matt from Backpack 20230414:
+  // "(pubkey -> username) endpoint doesn't exist anymore on purpose for identity obfuscation reasons"
+  // It's odd (since name -> pubkey effectively exposes the same info) but 🤷🏻‍♂️
   if (!jwt) {
     return {
       walletName: null,
