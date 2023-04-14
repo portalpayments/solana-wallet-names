@@ -277,7 +277,7 @@ export const dotBackpackToWallet = async (
   };
 };
 
-// TODO: looks like a this endpoint isn't finished, it doesn't work for all backpack users
+// TODO: looks like this endpoint isn't finished, it doesn't work for all backpack users
 // and is hidden
 export const walletToDotBackpack = async (
   wallet: PublicKey,
