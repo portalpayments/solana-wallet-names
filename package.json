@@ -20,7 +20,10 @@
     "wallet name",
     "resolve",
     "profile picture",
-    "PFP"
+    "PFP",
+    "name service",
+    "sns",
+    "ans"
   ],
   "author": "Mike MacCana <mike@getportal.app>",
   "license": "MIT",
