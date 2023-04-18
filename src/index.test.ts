@@ -19,7 +19,7 @@ import {
   walletToDotSol,
   walletToDotBackpack,
   walletToTwitterHandle,
-  walletAddressToName,
+  walletAddressToNameAndProfilePicture,
 } from ".";
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
@@ -371,7 +371,7 @@ describe(`wallet addresses to names`, () => {
 
   describe(`walletAddressToNameAndProfilePicture`, () => {
     test(`mike's wallet address returns his .abc name and his Solana PFP`, async () => {
-      const nameAndProfilePicture = await walletAddressToName(
+      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         mikesWallet
       );
@@ -383,7 +383,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`vidor's wallet address returns his .sol wallet name and profile picture`, async () => {
-      const nameAndProfilePicture = await walletAddressToName(
+      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         vidorsWallet
       );
@@ -395,7 +395,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`krispy's wallet address returns his wallet name and profile picture`, async () => {
-      const nameAndProfilePicture = await walletAddressToName(
+      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         krispysWallet
       );
@@ -408,7 +408,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`armani's wallet address returns his wallet name`, async () => {
-      const nameAndProfilePicture = await walletAddressToName(
+      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
         armanisWallet,
         backpackJWT

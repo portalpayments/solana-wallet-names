@@ -433,7 +433,7 @@ export const walletNameToAddressAndProfilePicture = async (
 };
 
 // Try all the major name services, but don't fallback to Solana PFP
-export const walletAddressToName = async (
+export const walletAddressToNameAndProfilePicture = async (
   connection: Connection,
   wallet: PublicKey,
   backpackJWT: string | null = null
