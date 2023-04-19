@@ -48,13 +48,13 @@ const removeExtension = (string: string, extension: string): string => {
 };
 
 // https://www.npmjs.com/package/@onsol/tldparser
-export const dotAbcDotBonkOrDotPoorToWallet = async (
+export const dotAnythingWallet = async (
   connection: Connection,
-  dotAbcDotBonkOrDotPoorDomain: string
+  ansDomainName: string
 ): Promise<WalletAddressAndProfilePicture> => {
   const parser = new TldParser(connection);
   const ownerPublicKey = await parser.getOwnerFromDomainTld(
-    dotAbcDotBonkOrDotPoorDomain
+    ansDomainName
   );
   return {
     walletAddress: ownerPublicKey.toBase58(),
@@ -66,7 +66,7 @@ export const dotAbcDotBonkOrDotPoorToWallet = async (
 // Docs for this suck, so check out
 // https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L97
 // getMainDomain() is what we want
-export const walletToDotAbcDotBonkOrDotPoor = async (
+export const ansMainDomainWallet = async (
   connection: Connection,
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
@@ -387,16 +387,7 @@ export const walletNameToAddressAndProfilePicture = async (
     walletAddress: null,
     profilePicture: null,
   };
-  if (
-    walletName.endsWith(".abc") ||
-    walletName.endsWith(".bonk") ||
-    walletName.endsWith(".poor")
-  ) {
-    walletAddressAndProfilePicture = await dotAbcDotBonkOrDotPoorToWallet(
-      connection,
-      walletName
-    );
-  }
+
   // Requires people to buy a custom token
   // and is complex to set up, but was more popular
   if (walletName.endsWith(".sol")) {
@@ -418,6 +409,13 @@ export const walletNameToAddressAndProfilePicture = async (
       walletName
     );
   }
+  if (!walletAddressAndProfilePicture && walletName.split(".").length >= 2) {
+    walletAddressAndProfilePicture = await dotAnythingWallet(
+      connection,
+      walletName
+    );
+  }
+
   // Use Solana PFP if we have an address but no profile picture
   if (
     walletAddressAndProfilePicture.walletAddress &&
@@ -440,14 +438,14 @@ export const walletAddressToNameAndProfilePicture = async (
 ): Promise<WalletNameAndProfilePicture> => {
   const solanaPFPStandardImageURL =
     await getProfilePictureUsingSolanaPFPStandard(connection, wallet);
-  const dotAbcOrBonkOrPoor = await walletToDotAbcDotBonkOrDotPoor(
+  const dotAnything = await ansMainDomainWallet(
     connection,
     wallet
   );
   // .abc, .bonk and .poor service doesn't have a profile picture, so use Solana PFP Standard
-  dotAbcOrBonkOrPoor.profilePicture = solanaPFPStandardImageURL;
-  if (dotAbcOrBonkOrPoor?.walletName && dotAbcOrBonkOrPoor?.profilePicture) {
-    return dotAbcOrBonkOrPoor;
+  dotAnything.profilePicture = solanaPFPStandardImageURL;
+  if (dotAnything?.walletName && dotAnything?.profilePicture) {
+    return dotAnything;
   }
   const dotSol = await walletToDotSol(connection, wallet);
   // Likewise .sol doesn't have a profile picture, so use Solana PFP Standard
