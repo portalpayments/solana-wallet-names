@@ -9,7 +9,7 @@ import {
 import { getDomainKeySync, NameRegistryState } from "@bonfida/spl-name-service";
 import * as http from "./http-client";
 import { TldParser } from "@onsol/tldparser";
-import type { MainDomain } from "@onsol/tldparser/dist/types/state/main-domain";
+import type { MainDomain } from "@onsol/tldparser";
 import type { ProfilePictureResponse } from "./types";
 // Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
 import { getProfilePicture as getProfilePictureUsingSolanaPFPStandardUpstream } from "@solflare-wallet/pfp";
