@@ -5,7 +5,7 @@
 
 <img src="docs/logo.png" alt="A human wearing a badge that says Hello my name is Solana Wallet Names" />
 
-This package resolves wallet names to wallet addresses (and the reverse) across the entire Solana ecosystem, including **7 different name services** and **4 different profile picture (PFP) services**.
+This package resolves wallet names to wallet addresses (and the reverse - wallet addresses to names) across the entire Solana ecosystem, including **7 different name services** and **4 different profile picture (PFP) services**.
 
 Supported **wallet names** are:
 
