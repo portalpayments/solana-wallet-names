@@ -405,7 +405,7 @@ export const walletNameToAddressAndProfilePicture = async (
   if (walletName.endsWith(".glow")) {
     walletAddressAndProfilePicture = await dotGlowToWallet(walletName);
   }
-  if (walletName.endsWith(".backpack") && jwt) {
+  if (walletName.endsWith(".backpack")) {
     walletAddressAndProfilePicture = await dotBackpackToWallet(walletName, jwt);
   }
   if (walletName.startsWith("@")) {
