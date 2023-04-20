@@ -95,3 +95,9 @@ const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
 - Twitter to address lookup is handled through Bonfida `.sol` domains. Very few people with `.sol` domains have set up Twitter handle to `.sol` domain handling. If you do own a `.sol` domain it [setting up Twitter to .sol mapping](https://docs.bonfida.org/collection/solana-name-service-twitter) takes less than five minutes.
 - Solana PFP Standard uses the Netscape 'broken image' icon for missing images. This is ugly, so instead we return `null`.
 - Backpack's wallet to name mapping seems to be in beta. It currently doesn't return results for some wallets. This endpoint also requires a Backpack JWT (unlike the name to wallet mappings, which are publicly available) so I susoect this service is still in beta.
+
+# Contributing 
+
+This library is designed to support all Solana naming services - as new services are added over time, we'd love you to contribute them here.
+
+Please see [Portal Wallet Coding Guidelines](https://github.com/portalpayments/portalwallet/blob/main/CODING_GUIDELINES.md) when writig your PRs.
