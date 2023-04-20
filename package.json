@@ -8,7 +8,8 @@
     "test": "jest",
     "clean": "rm -f dist/*",
     "build": "npm run clean && node esbuild.mjs",
-    "publish-new-version": "npm run build && npm publish"
+    "publish-new-version": "npm run build && npm publish",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",

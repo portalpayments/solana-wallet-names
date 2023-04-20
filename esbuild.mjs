@@ -13,6 +13,8 @@ let buildResult = await esbuild.build({
   ],
   tsconfig: "tsconfig.json",
   outdir: "dist",
+  target:"ES6",
+  format: "esm",
   bundle: false,
   plugins: [dtsPlugin()],
 });
