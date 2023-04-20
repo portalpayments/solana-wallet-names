@@ -14,7 +14,7 @@ let buildResult = await esbuild.build({
   tsconfig: "tsconfig.json",
   outdir: "dist",
   target:"ES6",
-  format: "esm",
+  format: "esm,cjs",
   bundle: false,
   plugins: [dtsPlugin()],
 });
