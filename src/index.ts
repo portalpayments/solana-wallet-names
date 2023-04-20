@@ -415,7 +415,7 @@ export const walletNameToAddressAndProfilePicture = async (
       walletName
     );
   }
-  if (!walletAddressAndProfilePicture && walletName.split(".").length >= 2) {
+  if (!walletAddressAndProfilePicture.walletAddress && walletName.split(".").length >= 2) {
     walletAddressAndProfilePicture = await dotAnythingWallet(
       connection,
       walletName
