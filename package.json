@@ -3,12 +3,6 @@
   "version": "1.2.5",
   "description": "Resolves Solana wallet names (.sol, .abc, .glow, .backpack, and many others) to wallet addresses and back.",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "exports": {
-    "import": "./dist/index.mjs",
-    "require": "./dist/index.js"
-  },
   "private": false,
   "scripts": {
     "test": "jest",
