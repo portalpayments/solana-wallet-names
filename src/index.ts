@@ -18,13 +18,13 @@ const log = console.log;
 const stringify = (object: unknown) => JSON.stringify(object, null, 2);
 
 interface WalletNameAndProfilePicture {
-  walletName: string;
-  profilePicture: string;
+  walletName: string | undefined;
+  profilePicture: string | undefined;
 }
 
 interface WalletAddressAndProfilePicture {
-  walletAddress: string;
-  profilePicture: string;
+  walletAddress: string | undefined;
+  profilePicture: string | undefined;
 }
 
 const getTwitterProfilePicture = async (
@@ -56,8 +56,8 @@ export const dotAnythingWallet = async (
     ansDomainName
   );
   return {
-    walletAddress: ownerPublicKey.toBase58(),
-    profilePicture: null,
+    walletAddress: ownerPublicKey?.toBase58(),
+    profilePicture: undefined,
   };
 };
 
@@ -77,22 +77,22 @@ export const ansMainDomainWallet = async (
     const error = thrownObject as Error;
     if (error.message.includes("Unable to find MainDomain account")) {
       return {
-        walletName: null,
-        profilePicture: null,
+        walletName: undefined,
+        profilePicture: undefined,
       };
     }
   }
   if (!mainDomain?.domain) {
     return {
-      walletName: null,
-      profilePicture: null,
+      walletName: undefined,
+      profilePicture: undefined,
     };
   }
   // Yes the . is already included in the tld
   const domainString = `${mainDomain.domain}${mainDomain.tld}`;
   return {
     walletName: domainString,
-    profilePicture: null,
+    profilePicture: undefined,
   };
 };
 
@@ -140,12 +140,15 @@ export const dotSolToWallet = async (
     //
     return {
       walletAddress: owner,
-      profilePicture: null,
+      profilePicture: undefined,
     };
   } catch (thrownObject) {
     const error = thrownObject as Error;
     if (error.message === "Invalid name account provided") {
-      return null;
+      return {
+        walletAddress: undefined,
+        profilePicture: undefined,
+      };
     }
     throw error;
   }
@@ -162,8 +165,8 @@ export const walletToDotSol = async (
     const allDomainKeys = await getAllDomains(connection, ownerWallet);
     if (!allDomainKeys.length) {
       return {
-        walletName: null,
-        profilePicture: null,
+        walletName: undefined,
+        profilePicture: undefined,
       };
     }
     const firstDomainKey = allDomainKeys[0];
@@ -171,12 +174,15 @@ export const walletToDotSol = async (
     const domainName = `${domainKeyName}.sol`;
     return {
       walletName: domainName,
-      profilePicture: null,
+      profilePicture: undefined,
     };
   } catch (thrownObject) {
     const error = thrownObject as Error;
     if (error.message === "Invalid wallet account provided") {
-      return null;
+      return {
+        walletName: undefined,
+        profilePicture: undefined,
+      };
     }
     throw error;
   }
@@ -209,7 +215,7 @@ export const dotBackpackToWallet = async (
     const walletAddress = firstPublicKeyDetails.publicKey || null;
     return {
       walletAddress,
-      profilePicture: null,
+      profilePicture: undefined,
     };
   }
 
@@ -230,21 +236,21 @@ export const dotBackpackToWallet = async (
   if (!users) {
     //
     return {
-      walletAddress: null,
-      profilePicture: null,
+      walletAddress: undefined,
+      profilePicture: undefined,
     };
   }
 
   const matchingUser = users.find(
-    (user) => user.username === dotBackpackUserName
+    (user: any) => user.username === dotBackpackUserName
   );
 
   const profilePicture = matchingUser?.image || null;
 
   if (!matchingUser) {
     return {
-      walletAddress: null,
-      profilePicture: null,
+      walletAddress: undefined,
+      profilePicture: undefined,
     };
   }
 
@@ -252,19 +258,19 @@ export const dotBackpackToWallet = async (
 
   if (!publicKeysDetails?.length) {
     return {
-      walletAddress: null,
-      profilePicture: null,
+      walletAddress: undefined,
+      profilePicture: undefined,
     };
   }
 
-  const solanaPublicKeyDetails = publicKeysDetails.find((publicKeyDetails) => {
+  const solanaPublicKeyDetails = publicKeysDetails.find((publicKeyDetails: any) => {
     return publicKeyDetails.blockchain === "solana";
   });
 
   if (!solanaPublicKeyDetails) {
     return {
-      walletAddress: null,
-      profilePicture: null,
+      walletAddress: undefined,
+      profilePicture: undefined,
     };
   }
 
@@ -288,8 +294,8 @@ export const walletToDotBackpack = async (
   // It's odd (since name -> pubkey effectively exposes the same info) but 🤷🏻‍♂️
   if (!jwt) {
     return {
-      walletName: null,
-      profilePicture: null,
+      walletName: undefined,
+      profilePicture: undefined,
     };
   }
   const walletString = wallet.toBase58();
@@ -300,8 +306,8 @@ export const walletToDotBackpack = async (
   const users = responseBody?.users || null;
   if (!users?.length) {
     return {
-      walletName: null,
-      profilePicture: null,
+      walletName: undefined,
+      profilePicture: undefined,
     };
   }
   const firstUser = users[0];
@@ -344,10 +350,11 @@ export const twitterHandleToWallet = async (
     const error = thrownObject as Error;
     if (error.message === "Invalid name account provided") {
       return {
-        walletAddress: null,
-        profilePicture: null,
+        walletAddress: undefined,
+        profilePicture: undefined,
       };
     }
+    throw error;
   }
 };
 
@@ -383,8 +390,8 @@ export const walletNameToAddressAndProfilePicture = async (
   // This seems to be the nicest maintained and less land-grab naming service
   // It also has multiple TLDs
   let walletAddressAndProfilePicture: WalletAddressAndProfilePicture = {
-    walletAddress: null,
-    profilePicture: null,
+    walletAddress: undefined,
+    profilePicture: undefined,
   };
 
   // Requires people to buy a custom token
@@ -424,7 +431,7 @@ export const walletNameToAddressAndProfilePicture = async (
       connection,
       new PublicKey(walletAddressAndProfilePicture.walletAddress)
     );
-    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl;
+    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl || undefined;
   }
   return walletAddressAndProfilePicture;
 };
@@ -442,13 +449,13 @@ export const walletAddressToNameAndProfilePicture = async (
     wallet
   );
   // .abc, .bonk and .poor service doesn't have a profile picture, so use Solana PFP Standard
-  dotAnything.profilePicture = solanaPFPStandardImageURL;
+  dotAnything.profilePicture = solanaPFPStandardImageURL || undefined;
   if (dotAnything?.walletName && dotAnything?.profilePicture) {
     return dotAnything;
   }
   const dotSol = await walletToDotSol(connection, wallet);
   // Likewise .sol doesn't have a profile picture, so use Solana PFP Standard
-  dotSol.profilePicture = solanaPFPStandardImageURL;
+  dotSol.profilePicture = solanaPFPStandardImageURL || undefined;
   if (dotSol?.walletName && dotSol?.profilePicture) {
     return dotSol;
   }
@@ -464,8 +471,8 @@ export const walletAddressToNameAndProfilePicture = async (
   }
 
   return {
-    walletName: null,
-    profilePicture: null,
+    walletName: undefined,
+    profilePicture: undefined,
   };
 };
 

@@ -10,17 +10,17 @@ export const CONTENT_TYPES = {
 
 export const get = async (
   uri: string,
-  headers: Record<string, string> | null = null,
-  forceResponseContentType: string | null = null
+  headers: Record<string, string> | undefined = undefined,
+  forceResponseContentType: string | undefined = undefined
 ) => {
-  return fetchUnfucked(uri, "GET", headers, null, forceResponseContentType);
+  return fetchUnfucked(uri, "GET", headers, undefined, forceResponseContentType);
 };
 
 export const post = async (
   uri: string,
-  headers: Record<string, string> | null = null,
+  headers: Record<string, string> | undefined = undefined,
   body: Record<string, unknown>,
-  forceResponseContentType: string | null = null
+  forceResponseContentType: string | undefined = undefined
 ) => {
   return fetchUnfucked(uri, "POST", headers, body, forceResponseContentType);
 };
@@ -29,7 +29,7 @@ export const fetchUnfucked = async (
   uri: string,
   method = "GET",
   headers: Record<string, string> = {},
-  body: Record<string, unknown> = null,
+  body: Record<string, unknown> | undefined,
   forceResponseContentType: string | null = null
 ) => {
   const options: RequestInit = {
@@ -41,7 +41,7 @@ export const fetchUnfucked = async (
   }
   const response = await fetch(uri, options);
 
-  let contentType = CONTENT_TYPES.JSON;
+  let contentType: string | undefined = CONTENT_TYPES.JSON;
   if (forceResponseContentType) {
     contentType = forceResponseContentType;
   } else {
