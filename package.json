@@ -10,8 +10,7 @@
     "test": "jest",
     "clean": "rm -f dist/*",
     "build": "npm run clean && tsup --format cjs,esm",
-    "publish-new-version": "npm run build && npm publish",
-    "prepare": "npm run build"
+    "publish-new-version": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
