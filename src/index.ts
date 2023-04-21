@@ -18,13 +18,13 @@ const log = console.log;
 const stringify = (object: unknown) => JSON.stringify(object, null, 2);
 
 interface WalletNameAndProfilePicture {
-  walletName: string | undefined;
-  profilePicture: string | undefined;
+  walletName: string | null;
+  profilePicture: string | null;
 }
 
 interface WalletAddressAndProfilePicture {
-  walletAddress: string | undefined;
-  profilePicture: string | undefined;
+  walletAddress: string | null;
+  profilePicture: string | null;
 }
 
 const getTwitterProfilePicture = async (
@@ -47,7 +47,7 @@ const removeExtension = (string: string, extension: string): string => {
 };
 
 // https://www.npmjs.com/package/@onsol/tldparser
-export const dotAnythingWallet = async (
+export const dotAnythingToWallet = async (
   connection: Connection,
   ansDomainName: string
 ): Promise<WalletAddressAndProfilePicture> => {
@@ -56,8 +56,8 @@ export const dotAnythingWallet = async (
     ansDomainName
   );
   return {
-    walletAddress: ownerPublicKey?.toBase58(),
-    profilePicture: undefined,
+    walletAddress: ownerPublicKey?.toBase58() || null,
+    profilePicture: null,
   };
 };
 
@@ -65,7 +65,7 @@ export const dotAnythingWallet = async (
 // Docs for this suck, so check out
 // https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L97
 // getMainDomain() is what we want
-export const ansMainDomainWallet = async (
+export const walletToDotAnything = async (
   connection: Connection,
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
@@ -77,22 +77,22 @@ export const ansMainDomainWallet = async (
     const error = thrownObject as Error;
     if (error.message.includes("Unable to find MainDomain account")) {
       return {
-        walletName: undefined,
-        profilePicture: undefined,
+        walletName: null,
+        profilePicture: null,
       };
     }
   }
   if (!mainDomain?.domain) {
     return {
-      walletName: undefined,
-      profilePicture: undefined,
+      walletName: null,
+      profilePicture: null,
     };
   }
   // Yes the . is already included in the tld
   const domainString = `${mainDomain.domain}${mainDomain.tld}`;
   return {
     walletName: domainString,
-    profilePicture: undefined,
+    profilePicture: null,
   };
 };
 
@@ -140,14 +140,14 @@ export const dotSolToWallet = async (
     //
     return {
       walletAddress: owner,
-      profilePicture: undefined,
+      profilePicture: null,
     };
   } catch (thrownObject) {
     const error = thrownObject as Error;
     if (error.message === "Invalid name account provided") {
       return {
-        walletAddress: undefined,
-        profilePicture: undefined,
+        walletAddress: null,
+        profilePicture: null,
       };
     }
     throw error;
@@ -165,8 +165,8 @@ export const walletToDotSol = async (
     const allDomainKeys = await getAllDomains(connection, ownerWallet);
     if (!allDomainKeys.length) {
       return {
-        walletName: undefined,
-        profilePicture: undefined,
+        walletName: null,
+        profilePicture: null,
       };
     }
     const firstDomainKey = allDomainKeys[0];
@@ -174,14 +174,14 @@ export const walletToDotSol = async (
     const domainName = `${domainKeyName}.sol`;
     return {
       walletName: domainName,
-      profilePicture: undefined,
+      profilePicture: null,
     };
   } catch (thrownObject) {
     const error = thrownObject as Error;
     if (error.message === "Invalid wallet account provided") {
       return {
-        walletName: undefined,
-        profilePicture: undefined,
+        walletName: null,
+        profilePicture: null,
       };
     }
     throw error;
@@ -215,7 +215,7 @@ export const dotBackpackToWallet = async (
     const walletAddress = firstPublicKeyDetails.publicKey || null;
     return {
       walletAddress,
-      profilePicture: undefined,
+      profilePicture: null,
     };
   }
 
@@ -236,8 +236,8 @@ export const dotBackpackToWallet = async (
   if (!users) {
     //
     return {
-      walletAddress: undefined,
-      profilePicture: undefined,
+      walletAddress: null,
+      profilePicture: null,
     };
   }
 
@@ -249,8 +249,8 @@ export const dotBackpackToWallet = async (
 
   if (!matchingUser) {
     return {
-      walletAddress: undefined,
-      profilePicture: undefined,
+      walletAddress: null,
+      profilePicture: null,
     };
   }
 
@@ -258,8 +258,8 @@ export const dotBackpackToWallet = async (
 
   if (!publicKeysDetails?.length) {
     return {
-      walletAddress: undefined,
-      profilePicture: undefined,
+      walletAddress: null,
+      profilePicture: null,
     };
   }
 
@@ -269,8 +269,8 @@ export const dotBackpackToWallet = async (
 
   if (!solanaPublicKeyDetails) {
     return {
-      walletAddress: undefined,
-      profilePicture: undefined,
+      walletAddress: null,
+      profilePicture: null,
     };
   }
 
@@ -294,8 +294,8 @@ export const walletToDotBackpack = async (
   // It's odd (since name -> pubkey effectively exposes the same info) but 🤷🏻‍♂️
   if (!jwt) {
     return {
-      walletName: undefined,
-      profilePicture: undefined,
+      walletName: null,
+      profilePicture: null,
     };
   }
   const walletString = wallet.toBase58();
@@ -306,8 +306,8 @@ export const walletToDotBackpack = async (
   const users = responseBody?.users || null;
   if (!users?.length) {
     return {
-      walletName: undefined,
-      profilePicture: undefined,
+      walletName: null,
+      profilePicture: null,
     };
   }
   const firstUser = users[0];
@@ -350,8 +350,8 @@ export const twitterHandleToWallet = async (
     const error = thrownObject as Error;
     if (error.message === "Invalid name account provided") {
       return {
-        walletAddress: undefined,
-        profilePicture: undefined,
+        walletAddress: null,
+        profilePicture: null,
       };
     }
     throw error;
@@ -390,8 +390,8 @@ export const walletNameToAddressAndProfilePicture = async (
   // This seems to be the nicest maintained and less land-grab naming service
   // It also has multiple TLDs
   let walletAddressAndProfilePicture: WalletAddressAndProfilePicture = {
-    walletAddress: undefined,
-    profilePicture: undefined,
+    walletAddress: null,
+    profilePicture: null,
   };
 
   // Requires people to buy a custom token
@@ -416,7 +416,7 @@ export const walletNameToAddressAndProfilePicture = async (
     );
   }
   if (!walletAddressAndProfilePicture.walletAddress && walletName.split(".").length >= 2) {
-    walletAddressAndProfilePicture = await dotAnythingWallet(
+    walletAddressAndProfilePicture = await dotAnythingToWallet(
       connection,
       walletName
     );
@@ -431,7 +431,7 @@ export const walletNameToAddressAndProfilePicture = async (
       connection,
       new PublicKey(walletAddressAndProfilePicture.walletAddress)
     );
-    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl || undefined;
+    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl || null;
   }
   return walletAddressAndProfilePicture;
 };
@@ -444,18 +444,18 @@ export const walletAddressToNameAndProfilePicture = async (
 ): Promise<WalletNameAndProfilePicture> => {
   const solanaPFPStandardImageURL =
     await getProfilePictureUsingSolanaPFPStandard(connection, wallet);
-  const dotAnything = await ansMainDomainWallet(
+  const dotAnything = await walletToDotAnything(
     connection,
     wallet
   );
   // .abc, .bonk and .poor service doesn't have a profile picture, so use Solana PFP Standard
-  dotAnything.profilePicture = solanaPFPStandardImageURL || undefined;
+  dotAnything.profilePicture = solanaPFPStandardImageURL || null;
   if (dotAnything?.walletName && dotAnything?.profilePicture) {
     return dotAnything;
   }
   const dotSol = await walletToDotSol(connection, wallet);
   // Likewise .sol doesn't have a profile picture, so use Solana PFP Standard
-  dotSol.profilePicture = solanaPFPStandardImageURL || undefined;
+  dotSol.profilePicture = solanaPFPStandardImageURL || null;
   if (dotSol?.walletName && dotSol?.profilePicture) {
     return dotSol;
   }
@@ -471,8 +471,8 @@ export const walletAddressToNameAndProfilePicture = async (
   }
 
   return {
-    walletName: undefined,
-    profilePicture: undefined,
+    walletName: null,
+    profilePicture: null,
   };
 };
 
