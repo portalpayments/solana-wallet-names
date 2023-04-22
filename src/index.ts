@@ -27,6 +27,15 @@ interface WalletAddressAndProfilePicture {
   profilePicture: string | null;
 }
 
+interface BackpackUser {
+}
+
+interface BackpackPublicKeyDetails {
+  "blockchain": string,
+  "publicKey": string,
+  "primary": boolean
+}
+
 const getTwitterProfilePicture = async (
   twitterBearerToken: string,
   twitterHandle: string
@@ -63,7 +72,7 @@ export const dotAnythingToWallet = async (
 
 // https://www.npmjs.com/package/@onsol/tldparser
 // Docs for this suck, so check out
-// https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L97
+// https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L78
 // getMainDomain() is what we want
 export const walletToDotAnything = async (
   connection: Connection,
@@ -448,7 +457,7 @@ export const walletAddressToNameAndProfilePicture = async (
     connection,
     wallet
   );
-  // .abc, .bonk and .poor service doesn't have a profile picture, so use Solana PFP Standard
+  // ANS doesn't have a profile picture, so use Solana PFP Standard
   dotAnything.profilePicture = solanaPFPStandardImageURL || null;
   if (dotAnything?.walletName && dotAnything?.profilePicture) {
     return dotAnything;
