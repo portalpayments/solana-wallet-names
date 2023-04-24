@@ -8,8 +8,7 @@ import {
 } from "@bonfida/spl-name-service";
 import { getDomainKeySync, NameRegistryState } from "@bonfida/spl-name-service";
 import * as http from "./http-client";
-import { TldParser } from "@onsol/tldparser";
-import type { MainDomain } from "@onsol/tldparser/dist/types/state/main-domain";
+import { TldParser, MainDomain as ANSMainDomain } from "@onsol/tldparser";
 import type { ProfilePictureResponse } from "./types";
 // Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
 import { getProfilePicture as getProfilePictureUsingSolanaPFPStandardUpstream } from "@solflare-wallet/pfp";
@@ -19,13 +18,22 @@ const log = console.log;
 const stringify = (object: unknown) => JSON.stringify(object, null, 2);
 
 interface WalletNameAndProfilePicture {
-  walletName: string;
-  profilePicture: string;
+  walletName: string | null;
+  profilePicture: string | null;
 }
 
 interface WalletAddressAndProfilePicture {
-  walletAddress: string;
-  profilePicture: string;
+  walletAddress: string | null;
+  profilePicture: string | null;
+}
+
+interface BackpackUser {
+}
+
+interface BackpackPublicKeyDetails {
+  "blockchain": string,
+  "publicKey": string,
+  "primary": boolean
 }
 
 const getTwitterProfilePicture = async (
@@ -48,30 +56,32 @@ const removeExtension = (string: string, extension: string): string => {
 };
 
 // https://www.npmjs.com/package/@onsol/tldparser
-export const dotAbcDotBonkOrDotPoorToWallet = async (
+export const dotAnythingToWallet = async (
   connection: Connection,
-  dotAbcDotBonkOrDotPoorDomain: string
+  ansDomainName: string
 ): Promise<WalletAddressAndProfilePicture> => {
   const parser = new TldParser(connection);
   const ownerPublicKey = await parser.getOwnerFromDomainTld(
-    dotAbcDotBonkOrDotPoorDomain
+    ansDomainName
   );
   return {
-    walletAddress: ownerPublicKey.toBase58(),
+    walletAddress: ownerPublicKey?.toBase58() || null,
     profilePicture: null,
   };
 };
 
 // https://www.npmjs.com/package/@onsol/tldparser
 // Docs for this suck, so check out
-// https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L97
+// https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L78
 // getMainDomain() is what we want
-export const walletToDotAbcDotBonkOrDotPoor = async (
+export const walletToDotAnything = async (
   connection: Connection,
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
   const parser = new TldParser(connection);
-  let mainDomain: MainDomain;
+  //assume this is an ANS Main Domain
+  //a main domain is the Primary domain
+  let mainDomain = {} as ANSMainDomain;
   try {
     mainDomain = await parser.getMainDomain(wallet);
   } catch (thrownObject) {
@@ -146,7 +156,10 @@ export const dotSolToWallet = async (
   } catch (thrownObject) {
     const error = thrownObject as Error;
     if (error.message === "Invalid name account provided") {
-      return null;
+      return {
+        walletAddress: null,
+        profilePicture: null,
+      };
     }
     throw error;
   }
@@ -177,7 +190,10 @@ export const walletToDotSol = async (
   } catch (thrownObject) {
     const error = thrownObject as Error;
     if (error.message === "Invalid wallet account provided") {
-      return null;
+      return {
+        walletName: null,
+        profilePicture: null,
+      };
     }
     throw error;
   }
@@ -237,7 +253,7 @@ export const dotBackpackToWallet = async (
   }
 
   const matchingUser = users.find(
-    (user) => user.username === dotBackpackUserName
+    (user: any) => user.username === dotBackpackUserName
   );
 
   const profilePicture = matchingUser?.image || null;
@@ -258,7 +274,7 @@ export const dotBackpackToWallet = async (
     };
   }
 
-  const solanaPublicKeyDetails = publicKeysDetails.find((publicKeyDetails) => {
+  const solanaPublicKeyDetails = publicKeysDetails.find((publicKeyDetails: any) => {
     return publicKeyDetails.blockchain === "solana";
   });
 
@@ -349,6 +365,7 @@ export const twitterHandleToWallet = async (
         profilePicture: null,
       };
     }
+    throw error;
   }
 };
 
@@ -387,16 +404,21 @@ export const walletNameToAddressAndProfilePicture = async (
     walletAddress: null,
     profilePicture: null,
   };
-  if (
-    walletName.endsWith(".abc") ||
-    walletName.endsWith(".bonk") ||
-    walletName.endsWith(".poor")
-  ) {
-    walletAddressAndProfilePicture = await dotAbcDotBonkOrDotPoorToWallet(
+
+  if (walletName.startsWith("@")) {
+    walletAddressAndProfilePicture = await twitterHandleToWallet(
       connection,
+      twitterBearerToken,
       walletName
     );
   }
+
+  //all domain name services require the domain contains a "."
+  const parts = walletName.split('.');
+  if(parts.length < 2){
+    return walletAddressAndProfilePicture;
+  }
+
   // Requires people to buy a custom token
   // and is complex to set up, but was more popular
   if (walletName.endsWith(".sol")) {
@@ -408,16 +430,16 @@ export const walletNameToAddressAndProfilePicture = async (
   if (walletName.endsWith(".glow")) {
     walletAddressAndProfilePicture = await dotGlowToWallet(walletName);
   }
-  if (walletName.endsWith(".backpack") && jwt) {
+  if (walletName.endsWith(".backpack")) {
     walletAddressAndProfilePicture = await dotBackpackToWallet(walletName, jwt);
   }
-  if (walletName.startsWith("@")) {
-    walletAddressAndProfilePicture = await twitterHandleToWallet(
+  if (!walletAddressAndProfilePicture.walletAddress) {
+    walletAddressAndProfilePicture = await dotAnythingToWallet(
       connection,
-      twitterBearerToken,
       walletName
     );
   }
+
   // Use Solana PFP if we have an address but no profile picture
   if (
     walletAddressAndProfilePicture.walletAddress &&
@@ -427,7 +449,7 @@ export const walletNameToAddressAndProfilePicture = async (
       connection,
       new PublicKey(walletAddressAndProfilePicture.walletAddress)
     );
-    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl;
+    walletAddressAndProfilePicture.profilePicture = solanaPFPUrl || null;
   }
   return walletAddressAndProfilePicture;
 };
@@ -440,18 +462,18 @@ export const walletAddressToNameAndProfilePicture = async (
 ): Promise<WalletNameAndProfilePicture> => {
   const solanaPFPStandardImageURL =
     await getProfilePictureUsingSolanaPFPStandard(connection, wallet);
-  const dotAbcOrBonkOrPoor = await walletToDotAbcDotBonkOrDotPoor(
+  const dotAnything = await walletToDotAnything(
     connection,
     wallet
   );
-  // .abc, .bonk and .poor service doesn't have a profile picture, so use Solana PFP Standard
-  dotAbcOrBonkOrPoor.profilePicture = solanaPFPStandardImageURL;
-  if (dotAbcOrBonkOrPoor?.walletName && dotAbcOrBonkOrPoor?.profilePicture) {
-    return dotAbcOrBonkOrPoor;
+  // ANS domains don't have a profile picture, so use Solana PFP Standard
+  dotAnything.profilePicture = solanaPFPStandardImageURL || null;
+  if (dotAnything?.walletName && dotAnything?.profilePicture) {
+    return dotAnything;
   }
   const dotSol = await walletToDotSol(connection, wallet);
   // Likewise .sol doesn't have a profile picture, so use Solana PFP Standard
-  dotSol.profilePicture = solanaPFPStandardImageURL;
+  dotSol.profilePicture = solanaPFPStandardImageURL || null;
   if (dotSol?.walletName && dotSol?.profilePicture) {
     return dotSol;
   }
