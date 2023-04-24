@@ -5,7 +5,7 @@
 
 <img src="docs/logo.png" alt="A human wearing a badge that says Hello my name is Solana Wallet Names" />
 
-This package resolves wallet names to wallet addresses (and the reverse - wallet addresses to names) across the entire Solana ecosystem, including **7 different name services** and **4 different profile picture (PFP) services**.
+This package resolves **wallet names** (like `mikemaccana.sol`) to **wallet addresses** (like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`) (and the reverse - wallet addresses to names) across the entire Solana ecosystem, including **7 different name services** and **4 different profile picture (PFP) services**.
 
 Supported **wallet names** are:
 
@@ -65,6 +65,15 @@ const walletAddressAndProfilePicture = await walletNameToAddressAndProfilePictur
 }
 ```
 
+If either (or both) aren't found, they will be `null`. We only error for actual errors (and don't throw error when there are no results):
+
+```
+{
+  walletAddress: null,
+  profilePicture: null,
+}
+```
+
 ## Wallet address ➡️ wallet name (and profile picture)
 
 If you have a wallet address, like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`, and you want to get an address and profile picture:
@@ -72,7 +81,7 @@ If you have a wallet address, like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM
 ```typescript
 import { walletAddressToNameAndProfilePicture } from "@portal-payments/solana-wallet-names";
 
-const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
+const walletNameAndProfilePicture = await walletAddressToNameAndProfilePicture(
   // A Solana connection
   connection,
   // A Solana wallet address
@@ -80,7 +89,7 @@ const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
 );
 ```
 
-`nameAndProfilePicture` will look like:
+`walletNameAndProfilePicture` will look like:
 
 ```
 {

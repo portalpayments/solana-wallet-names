@@ -8,17 +8,17 @@ import {
   WALLET_WITH_NO_NAME,
 } from "./constants";
 import {
-  twitterHandleToWallet,
-  dotSolToWallet,
-  dotBackpackToWallet,
-  dotGlowToWallet,
-  dotAnythingToWallet,
+  twitterHandleToWalletAddress,
+  dotSolToWalletAddress,
+  dotBackpackToWalletAddress,
+  dotGlowToWalletAddress,
+  dotAnythingToWalletAddress,
   walletNameToAddressAndProfilePicture,
-  walletToDotAnything,
-  walletToDotGlow,
-  walletToDotSol,
-  walletToDotBackpack,
-  walletToTwitterHandle,
+  walletAddressToDotAnything,
+  walletAddressToDotGlow,
+  walletAddressToDotSol,
+  walletAddressToDotBackpack,
+  walletAddressToTwitterHandle,
   walletAddressToNameAndProfilePicture,
 } from ".";
 import { connect } from "./connect";
@@ -66,26 +66,35 @@ describe(`wallet names to addresses`, () => {
 
   describe(`dotSolDomainToWallet`, () => {
     test(`mikemaccana.sol resolves`, async () => {
-      const wallet = await dotSolToWallet(connection, "mikemaccana.sol");
-      expect(wallet).toEqual({
+      const walletAddressAndProfilePicture = await dotSolToWalletAddress(
+        connection,
+        "mikemaccana.sol"
+      );
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture: null,
         walletAddress: "5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM",
       });
     });
 
     test(`unregistered-domain-for-unit-tests.sol returns null`, async () => {
-      const wallet = await dotSolToWallet(
+      const walletAddressAndProfilePicture = await dotSolToWalletAddress(
         connection,
         "unregistered-domain-for-unit-tests.sol"
       );
-      expect(wallet).toEqual(null);
+      expect(walletAddressAndProfilePicture).toEqual({
+        profilePicture: null,
+        walletAddress: null,
+      });
     });
   });
 
   describe(`dotBackpackToWallet`, () => {
     test(`armani.backpack resolves`, async () => {
-      const wallet = await dotBackpackToWallet("armani.backpack", backpackJWT);
-      expect(wallet).toEqual({
+      const walletAddressAndProfilePicture = await dotBackpackToWalletAddress(
+        "armani.backpack",
+        backpackJWT
+      );
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture: "https://swr.xnfts.dev/avatars/armani",
         walletAddress: ARMANIS_WALLET,
       });
@@ -94,8 +103,10 @@ describe(`wallet names to addresses`, () => {
 
   describe(`dotGlowToWallet`, () => {
     test(`mikemaccana.glow resolves`, async () => {
-      const wallet = await dotGlowToWallet("mikemaccana.glow");
-      expect(wallet).toEqual({
+      const walletAddressAndProfilePicture = await dotGlowToWalletAddress(
+        "mikemaccana.glow"
+      );
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture:
           "https://cdn.glow.app/g/er/ae01b288-3bc6-4248-ac49-a6b6c6132fb6",
         walletAddress: MIKES_WALLET,
@@ -105,11 +116,11 @@ describe(`wallet names to addresses`, () => {
 
   describe(`dotAbcDotBonkOrDotPoorDomainToWallet`, () => {
     test(`mikemaccana.abc resolves`, async () => {
-      const wallet = await dotAnythingToWallet(
+      const walletAddressAndProfilePicture = await dotAnythingToWalletAddress(
         connection,
         "mikemaccana.abc"
       );
-      expect(wallet).toEqual({
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture: null,
         walletAddress: MIKES_WALLET,
       });
@@ -118,12 +129,12 @@ describe(`wallet names to addresses`, () => {
 
   describe(`atTwitterToWallet`, () => {
     test(`Finds @mikemaccana's wallet`, async () => {
-      const wallet = await twitterHandleToWallet(
+      const walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
         connection,
         twitterBearerToken,
         "mikemaccana"
       );
-      expect(wallet).toEqual({
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture:
           "https://pbs.twimg.com/profile_images/1623624287365091331/3zgMY9KG_normal.jpg",
         walletAddress: MIKES_WALLET,
@@ -131,12 +142,12 @@ describe(`wallet names to addresses`, () => {
     });
 
     test(`Finds @mikemaccana's wallet (with the @ included)`, async () => {
-      const wallet = await twitterHandleToWallet(
+      const walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
         connection,
         twitterBearerToken,
         "@mikemaccana"
       );
-      expect(wallet).toEqual({
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture:
           "https://pbs.twimg.com/profile_images/1623624287365091331/3zgMY9KG_normal.jpg",
         walletAddress: MIKES_WALLET,
@@ -144,24 +155,27 @@ describe(`wallet names to addresses`, () => {
     });
 
     test(`Finds @mikemaccana's wallet (with the @ included) without a Twitter bearer token`, async () => {
-      const wallet = await twitterHandleToWallet(
+      const walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
         connection,
         null,
         "@mikemaccana"
       );
-      expect(wallet).toEqual({
+      expect(walletAddressAndProfilePicture).toEqual({
         profilePicture: null,
         walletAddress: MIKES_WALLET,
       });
     });
 
     test(`Returns null for a bad Twitter handle`, async () => {
-      const wallet = await twitterHandleToWallet(
+      const walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
         connection,
         null,
         "jdhfkljsdghghsflkghfkljgshjfgl"
       );
-      expect(wallet).toEqual({ profilePicture: null, walletAddress: null });
+      expect(walletAddressAndProfilePicture).toEqual({
+        profilePicture: null,
+        walletAddress: null,
+      });
     });
   });
 
@@ -274,12 +288,9 @@ describe(`wallet addresses to names`, () => {
 
   const WALLET_WITH_NO_NAMES = new PublicKey(WALLET_WITH_NO_NAME);
 
-  describe(`walletToDotAnything`, () => {
+  describe(`walletAddressToDotAnything`, () => {
     test(`mike's wallet resolves to .abc domain`, async () => {
-      const result = await walletToDotAnything(
-        connection,
-        mikesWallet
-      );
+      const result = await walletAddressToDotAnything(connection, mikesWallet);
       expect(result).toEqual({
         profilePicture: null,
         walletName: "mikemaccana.abc",
@@ -287,7 +298,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`wallets with no names return null`, async () => {
-      const result = await walletToDotAnything(
+      const result = await walletAddressToDotAnything(
         connection,
         WALLET_WITH_NO_NAMES
       );
@@ -298,9 +309,9 @@ describe(`wallet addresses to names`, () => {
     });
   });
 
-  describe(`walletToDotGlow`, () => {
+  describe(`walletAddressToDotGlow`, () => {
     test(`mike's wallet resolves to .glow domain`, async () => {
-      const result = await walletToDotGlow(mikesWallet);
+      const result = await walletAddressToDotGlow(mikesWallet);
       expect(result).toEqual({
         profilePicture:
           "https://cdn.glow.app/g/er/ae01b288-3bc6-4248-ac49-a6b6c6132fb6",
@@ -309,9 +320,9 @@ describe(`wallet addresses to names`, () => {
     });
   });
 
-  describe(`walletToDotSolDomain`, () => {
+  describe(`walletAddressToDotSolDomain`, () => {
     test(`mike's wallet resolves to .sol domain`, async () => {
-      const result = await walletToDotSol(connection, mikesWallet);
+      const result = await walletAddressToDotSol(connection, mikesWallet);
       expect(result).toEqual({
         profilePicture: null,
         walletName: "mikemaccana.sol",
@@ -319,7 +330,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`vidor's wallet resolves to .sol domain`, async () => {
-      const result = await walletToDotSol(connection, vidorsWallet);
+      const result = await walletAddressToDotSol(connection, vidorsWallet);
       expect(result).toEqual({
         profilePicture: null,
         walletName: "vidor.sol",
@@ -327,7 +338,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`krispy's wallet resolves to .sol domain`, async () => {
-      const result = await walletToDotSol(connection, krispysWallet);
+      const result = await walletAddressToDotSol(connection, krispysWallet);
       expect(result).toEqual({
         profilePicture: null,
         // Seems to change every so often
@@ -336,7 +347,10 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`wallets with no names return null`, async () => {
-      const result = await walletToDotSol(connection, WALLET_WITH_NO_NAMES);
+      const result = await walletAddressToDotSol(
+        connection,
+        WALLET_WITH_NO_NAMES
+      );
       expect(result).toEqual({
         profilePicture: null,
         walletName: null,
@@ -344,7 +358,7 @@ describe(`wallet addresses to names`, () => {
     });
   });
 
-  describe(`walletToDotBackpack`, () => {
+  describe(`walletAddressToDotBackpack`, () => {
     // TODO: this endpoint seems to be in beta:
     // - Reverse lookup of backpack domains does not yet seem to work
     // for wallets other than Armani's.
@@ -353,7 +367,10 @@ describe(`wallet addresses to names`, () => {
     testOrSkipIfJWTNotSetup(
       `armani's wallet resolves to .backpack domain`,
       async () => {
-        const result = await walletToDotBackpack(armanisWallet, backpackJWT);
+        const result = await walletAddressToDotBackpack(
+          armanisWallet,
+          backpackJWT
+        );
         expect(result).toEqual({
           profilePicture: "https://swr.xnfts.dev/avatars/armani",
           walletName: "armani.backpack",
@@ -362,9 +379,12 @@ describe(`wallet addresses to names`, () => {
     );
   });
 
-  describe(`walletToTwitterHandle`, () => {
+  describe(`walletAddressToTwitterHandle`, () => {
     test(`mike's wallet resolves to @mikemaccana`, async () => {
-      const handle = await walletToTwitterHandle(connection, mikesWallet);
+      const handle = await walletAddressToTwitterHandle(
+        connection,
+        mikesWallet
+      );
       expect(handle).toEqual("@mikemaccana");
     });
   });

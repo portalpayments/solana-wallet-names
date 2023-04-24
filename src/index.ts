@@ -56,14 +56,12 @@ const removeExtension = (string: string, extension: string): string => {
 };
 
 // https://www.npmjs.com/package/@onsol/tldparser
-export const dotAnythingToWallet = async (
+export const dotAnythingToWalletAddress = async (
   connection: Connection,
   ansDomainName: string
 ): Promise<WalletAddressAndProfilePicture> => {
   const parser = new TldParser(connection);
-  const ownerPublicKey = await parser.getOwnerFromDomainTld(
-    ansDomainName
-  );
+  const ownerPublicKey = await parser.getOwnerFromDomainTld(ansDomainName);
   return {
     walletAddress: ownerPublicKey?.toBase58() || null,
     profilePicture: null,
@@ -74,13 +72,13 @@ export const dotAnythingToWallet = async (
 // Docs for this suck, so check out
 // https://github.com/onsol-labs/tld-parser/blob/main/tests/tld-parser.spec.ts#L78
 // getMainDomain() is what we want
-export const walletToDotAnything = async (
+export const walletAddressToDotAnything = async (
   connection: Connection,
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
   const parser = new TldParser(connection);
-  //assume this is an ANS Main Domain
-  //a main domain is the Primary domain
+  // Assume this is an ANS Main Domain - a main domain is the domain that a wallet address
+  // with multiple names will resolve to.
   let mainDomain = {} as ANSMainDomain;
   try {
     mainDomain = await parser.getMainDomain(wallet);
@@ -109,7 +107,7 @@ export const walletToDotAnything = async (
 
 // https://docs.glow.app/reference/resolve-glow-id
 // The 'API' node module has a bunch of issues running in the browser so just use http module directly
-export const dotGlowToWallet = async (
+export const dotGlowToWalletAddress = async (
   dotGlowDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
   const dotGlowUserName = removeExtension(dotGlowDomain, "glow");
@@ -124,7 +122,7 @@ export const dotGlowToWallet = async (
   };
 };
 
-export const walletToDotGlow = async (wallet: PublicKey) => {
+export const walletAddressToDotGlow = async (wallet: PublicKey) => {
   const walletString = wallet.toBase58();
   const responseBody = await http.get(
     `https://api.glow.app/glow-id/resolve?wallet=${walletString}`
@@ -139,7 +137,7 @@ export const walletToDotGlow = async (wallet: PublicKey) => {
 };
 
 // See https://www.quicknode.com/guides/solana-development/accounts-and-data/how-to-query-solana-naming-service-domains-sol/#set-up-your-environment
-export const dotSolToWallet = async (
+export const dotSolToWalletAddress = async (
   connection: Connection,
   dotSolDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
@@ -166,7 +164,7 @@ export const dotSolToWallet = async (
 };
 
 // See https://www.quicknode.com/guides/solana-development/accounts-and-data/how-to-query-solana-naming-service-domains-sol/#reverse-lookup-find-all-domains-owned-by-a-wallet
-export const walletToDotSol = async (
+export const walletAddressToDotSol = async (
   connection: Connection,
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
@@ -199,7 +197,7 @@ export const walletToDotSol = async (
   }
 };
 
-export const dotBackpackToWallet = async (
+export const dotBackpackToWalletAddress = async (
   dotBackpackDomainName: string,
   jwt: string | null = null
 ): Promise<WalletAddressAndProfilePicture> => {
@@ -245,7 +243,6 @@ export const dotBackpackToWallet = async (
   const users = responseBody?.users || null;
 
   if (!users) {
-    //
     return {
       walletAddress: null,
       profilePicture: null,
@@ -274,9 +271,11 @@ export const dotBackpackToWallet = async (
     };
   }
 
-  const solanaPublicKeyDetails = publicKeysDetails.find((publicKeyDetails: any) => {
-    return publicKeyDetails.blockchain === "solana";
-  });
+  const solanaPublicKeyDetails = publicKeysDetails.find(
+    (publicKeyDetails: any) => {
+      return publicKeyDetails.blockchain === "solana";
+    }
+  );
 
   if (!solanaPublicKeyDetails) {
     return {
@@ -295,7 +294,7 @@ export const dotBackpackToWallet = async (
 
 // TODO: looks like this endpoint isn't finished, it doesn't work for all backpack users
 // and is hidden
-export const walletToDotBackpack = async (
+export const walletAddressToDotBackpack = async (
   wallet: PublicKey,
   jwt: string | null = null
 ): Promise<WalletNameAndProfilePicture> => {
@@ -331,7 +330,7 @@ export const walletToDotBackpack = async (
   };
 };
 
-export const twitterHandleToWallet = async (
+export const twitterHandleToWalletAddress = async (
   connection: Connection,
   twitterBearerToken: string | null = null,
   twitterHandle: string
@@ -369,7 +368,7 @@ export const twitterHandleToWallet = async (
   }
 };
 
-export const walletToTwitterHandle = async (
+export const walletAddressToTwitterHandle = async (
   connection: Connection,
   wallet: PublicKey
 ) => {
@@ -398,43 +397,47 @@ export const walletNameToAddressAndProfilePicture = async (
   twitterBearerToken: string | null = null,
   jwt: string | null = null
 ): Promise<WalletAddressAndProfilePicture> => {
-  // This seems to be the nicest maintained and less land-grab naming service
-  // It also has multiple TLDs
   let walletAddressAndProfilePicture: WalletAddressAndProfilePicture = {
     walletAddress: null,
     profilePicture: null,
   };
 
   if (walletName.startsWith("@")) {
-    walletAddressAndProfilePicture = await twitterHandleToWallet(
+    walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
       connection,
       twitterBearerToken,
       walletName
     );
   }
 
-  //all domain name services require the domain contains a "."
-  const parts = walletName.split('.');
-  if(parts.length < 2){
+  // All domain name services have at least two parts
+  const parts = walletName.split(".");
+  if (parts.length < 2) {
     return walletAddressAndProfilePicture;
   }
 
   // Requires people to buy a custom token
   // and is complex to set up, but was more popular
   if (walletName.endsWith(".sol")) {
-    walletAddressAndProfilePicture = await dotSolToWallet(
+    walletAddressAndProfilePicture = await dotSolToWalletAddress(
       connection,
       walletName
     );
   }
   if (walletName.endsWith(".glow")) {
-    walletAddressAndProfilePicture = await dotGlowToWallet(walletName);
+    walletAddressAndProfilePicture = await dotGlowToWalletAddress(walletName);
   }
   if (walletName.endsWith(".backpack")) {
-    walletAddressAndProfilePicture = await dotBackpackToWallet(walletName, jwt);
+    walletAddressAndProfilePicture = await dotBackpackToWalletAddress(
+      walletName,
+      jwt
+    );
   }
+
+  // ANS seems to be the nicest maintained and less land-grab naming service
+  // It also has multiple TLDs, so we will fall back to it for all other domains.
   if (!walletAddressAndProfilePicture.walletAddress) {
-    walletAddressAndProfilePicture = await dotAnythingToWallet(
+    walletAddressAndProfilePicture = await dotAnythingToWalletAddress(
       connection,
       walletName
     );
@@ -462,27 +465,24 @@ export const walletAddressToNameAndProfilePicture = async (
 ): Promise<WalletNameAndProfilePicture> => {
   const solanaPFPStandardImageURL =
     await getProfilePictureUsingSolanaPFPStandard(connection, wallet);
-  const dotAnything = await walletToDotAnything(
-    connection,
-    wallet
-  );
+  const dotAnything = await walletAddressToDotAnything(connection, wallet);
   // ANS domains don't have a profile picture, so use Solana PFP Standard
   dotAnything.profilePicture = solanaPFPStandardImageURL || null;
   if (dotAnything?.walletName && dotAnything?.profilePicture) {
     return dotAnything;
   }
-  const dotSol = await walletToDotSol(connection, wallet);
+  const dotSol = await walletAddressToDotSol(connection, wallet);
   // Likewise .sol doesn't have a profile picture, so use Solana PFP Standard
   dotSol.profilePicture = solanaPFPStandardImageURL || null;
   if (dotSol?.walletName && dotSol?.profilePicture) {
     return dotSol;
   }
-  const dotGlow = await walletToDotGlow(wallet);
+  const dotGlow = await walletAddressToDotGlow(wallet);
   if (dotGlow?.walletName && dotGlow?.profilePicture) {
     return dotGlow;
   }
   if (backpackJWT) {
-    const dotBackpack = await walletToDotBackpack(wallet, backpackJWT);
+    const dotBackpack = await walletAddressToDotBackpack(wallet, backpackJWT);
     if (dotBackpack?.walletName && dotBackpack?.profilePicture) {
       return dotBackpack;
     }

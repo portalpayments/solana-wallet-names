@@ -47,9 +47,9 @@ export const fetchUnfucked = async (
   } else {
     let contentTypeHeader = response.headers.get("Content-Type");
     if (contentTypeHeader) {
-      //Sometimes the header could be malformed
+      // Just in case the Content-Type header is malformed
       const parts = contentTypeHeader.split(";");
-      if(parts.length > 0){
+      if (parts.length > 0) {
         contentType = parts.at(0);
       }
     } else {
