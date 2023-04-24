@@ -457,7 +457,7 @@ export const walletAddressToNameAndProfilePicture = async (
     connection,
     wallet
   );
-  // ANS doesn't have a profile picture, so use Solana PFP Standard
+  // ANS domains don't have a profile picture, so use Solana PFP Standard
   dotAnything.profilePicture = solanaPFPStandardImageURL || null;
   if (dotAnything?.walletName && dotAnything?.profilePicture) {
     return dotAnything;
