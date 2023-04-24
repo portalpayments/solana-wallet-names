@@ -109,4 +109,10 @@ const walletNameAndProfilePicture = await walletAddressToNameAndProfilePicture(
 
 This library is designed to support all Solana naming services - as new services are added over time, we'd love you to contribute them here.
 
-Please see [Portal Wallet Coding Guidelines](https://github.com/portalpayments/portalwallet/blob/main/CODING_GUIDELINES.md) when writig your PRs.
+Please see [Portal Wallet Coding Guidelines](https://github.com/portalpayments/portalwallet/blob/main/CODING_GUIDELINES.md) when writing your PRs.
+
+File issues in the **Issues** tab in GitHub 
+
+# Changelog
+
+See [CHANGELOG](./CHANGELOG.md).
