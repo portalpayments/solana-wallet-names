@@ -41,13 +41,17 @@ export const fetchUnfucked = async (
   }
   const response = await fetch(uri, options);
 
-  let contentType: string | undefined = CONTENT_TYPES.JSON;
+  let contentType: string = CONTENT_TYPES.JSON;
   if (forceResponseContentType) {
     contentType = forceResponseContentType;
   } else {
     let contentTypeHeader = response.headers.get("Content-Type");
     if (contentTypeHeader) {
-      contentType = contentTypeHeader.split(";").at(0);
+      //Sometimes the header could be malformed
+      const parts = contentTypeHeader.split(";");
+      if(parts.length > 0){
+        contentType = parts.at(0);
+      }
     } else {
       log(`No Content Type header. Weird. Using default.`);
     }

@@ -8,7 +8,7 @@ import {
 } from "@bonfida/spl-name-service";
 import { getDomainKeySync, NameRegistryState } from "@bonfida/spl-name-service";
 import * as http from "./http-client";
-import { TldParser, MainDomain } from "@onsol/tldparser";
+import { TldParser, MainDomain as ANSMainDomain } from "@onsol/tldparser";
 import type { ProfilePictureResponse } from "./types";
 // Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
 import { getProfilePicture as getProfilePictureUsingSolanaPFPStandardUpstream } from "@solflare-wallet/pfp";
@@ -79,7 +79,9 @@ export const walletToDotAnything = async (
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
   const parser = new TldParser(connection);
-  let mainDomain = {} as MainDomain;
+  //assume this is an ANS Main Domain
+  //a main domain is the Primary domain
+  let mainDomain = {} as ANSMainDomain;
   try {
     mainDomain = await parser.getMainDomain(wallet);
   } catch (thrownObject) {
@@ -403,6 +405,20 @@ export const walletNameToAddressAndProfilePicture = async (
     profilePicture: null,
   };
 
+  if (walletName.startsWith("@")) {
+    walletAddressAndProfilePicture = await twitterHandleToWallet(
+      connection,
+      twitterBearerToken,
+      walletName
+    );
+  }
+
+  //all domain name services require the domain contains a "."
+  const parts = walletName.split('.');
+  if(parts.length < 2){
+    return walletAddressAndProfilePicture;
+  }
+
   // Requires people to buy a custom token
   // and is complex to set up, but was more popular
   if (walletName.endsWith(".sol")) {
@@ -417,14 +433,7 @@ export const walletNameToAddressAndProfilePicture = async (
   if (walletName.endsWith(".backpack")) {
     walletAddressAndProfilePicture = await dotBackpackToWallet(walletName, jwt);
   }
-  if (walletName.startsWith("@")) {
-    walletAddressAndProfilePicture = await twitterHandleToWallet(
-      connection,
-      twitterBearerToken,
-      walletName
-    );
-  }
-  if (!walletAddressAndProfilePicture.walletAddress && walletName.split(".").length >= 2) {
+  if (!walletAddressAndProfilePicture.walletAddress) {
     walletAddressAndProfilePicture = await dotAnythingToWallet(
       connection,
       walletName
