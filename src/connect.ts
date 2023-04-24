@@ -2,7 +2,7 @@ import { Connection } from "@solana/web3.js";
 
 import { log } from "console";
 
-export const connect = async (rpcURL: string): Promise<Connection> => {
+export const connect = (rpcURL: string): Connection => {
   const connection = new Connection(rpcURL, {
     commitment: "finalized",
     disableRetryOnRateLimit: true,
