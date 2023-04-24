@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@bonfida/spl-name-service": "^0.1.66",
-    "@onsol/tldparser": "^0.5.2",
+    "@onsol/tldparser": "^0.5.3",
     "@solana/web3.js": "^1.73.3",
     "@solflare-wallet/pfp": "^0.1.0",
     "crypto-browserify": "^3.12.0",
