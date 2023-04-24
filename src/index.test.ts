@@ -12,9 +12,9 @@ import {
   dotSolToWallet,
   dotBackpackToWallet,
   dotGlowToWallet,
-  dotAbcDotBonkOrDotPoorToWallet,
+  dotAnythingToWallet,
   walletNameToAddressAndProfilePicture,
-  walletToDotAbcDotBonkOrDotPoor,
+  walletToDotAnything,
   walletToDotGlow,
   walletToDotSol,
   walletToDotBackpack,
@@ -105,7 +105,7 @@ describe(`wallet names to addresses`, () => {
 
   describe(`dotAbcDotBonkOrDotPoorDomainToWallet`, () => {
     test(`mikemaccana.abc resolves`, async () => {
-      const wallet = await dotAbcDotBonkOrDotPoorToWallet(
+      const wallet = await dotAnythingToWallet(
         connection,
         "mikemaccana.abc"
       );
@@ -274,9 +274,9 @@ describe(`wallet addresses to names`, () => {
 
   const WALLET_WITH_NO_NAMES = new PublicKey(WALLET_WITH_NO_NAME);
 
-  describe(`walletToDotAbcDotBonkOrDotPoor`, () => {
+  describe(`walletToDotAnything`, () => {
     test(`mike's wallet resolves to .abc domain`, async () => {
-      const result = await walletToDotAbcDotBonkOrDotPoor(
+      const result = await walletToDotAnything(
         connection,
         mikesWallet
       );
@@ -287,7 +287,7 @@ describe(`wallet addresses to names`, () => {
     });
 
     test(`wallets with no names return null`, async () => {
-      const result = await walletToDotAbcDotBonkOrDotPoor(
+      const result = await walletToDotAnything(
         connection,
         WALLET_WITH_NO_NAMES
       );
