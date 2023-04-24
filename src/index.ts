@@ -27,15 +27,6 @@ interface WalletAddressAndProfilePicture {
   profilePicture: string | null;
 }
 
-interface BackpackUser {
-}
-
-interface BackpackPublicKeyDetails {
-  "blockchain": string,
-  "publicKey": string,
-  "primary": boolean
-}
-
 const getTwitterProfilePicture = async (
   twitterBearerToken: string,
   twitterHandle: string
