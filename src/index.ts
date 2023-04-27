@@ -101,6 +101,33 @@ export const walletAddressToDotAnything = async (
   };
 };
 
+export const dotOttrResponseHTMLToObject = (
+  html: string
+): Record<string, any> => {
+  //TODO: remove once Ottr make API available
+  var newDocument = new DOMParser().parseFromString(html, "text/html");
+  const jsonInsideHTML =
+    newDocument.getElementById("__NEXT_DATA__").textContent;
+  return JSON.parse(jsonInsideHTML);
+};
+
+export const dotOttrToWalletAddress = async (
+  dotOttrDomain: string
+): Promise<WalletAddressAndProfilePicture> => {
+  const { body } = await http.get(`https://ottr.id/${dotOttrDomain}`);
+  const object = dotOttrResponseHTMLToObject(body);
+
+  const customer = object?.props?.pageProps?.customer;
+
+  const walletAddress = customer?.wallet || null;
+  const profilePicture = customer?.picture || null;
+
+  return {
+    walletAddress,
+    profilePicture,
+  };
+};
+
 // https://docs.glow.app/reference/resolve-glow-id
 // The 'API' node module has a bunch of issues running in the browser so just use http module directly
 export const dotGlowToWalletAddress = async (

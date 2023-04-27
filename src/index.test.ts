@@ -20,9 +20,12 @@ import {
   walletAddressToDotBackpack,
   walletAddressToTwitterHandle,
   walletAddressToNameAndProfilePicture,
+  dotOttrToWalletAddress,
 } from ".";
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
+
+import { JSDOM } from "jsdom";
 
 const log = console.log;
 
@@ -62,6 +65,19 @@ describe(`wallet names to addresses`, () => {
   let connection: Connection;
   beforeAll(async () => {
     connection = await connect(rpcURL);
+
+    // Used for tests only, because node doesn't have a DOM parser built in
+    // TODO: remove once Ottr makes API available
+    class DOMParser {
+      constructor() {
+        return this;
+      }
+      parseFromString(string, contentType = "text/html") {
+        return new JSDOM(string, { contentType }).window.document;
+      }
+    }
+
+    globalThis.DOMParser = DOMParser;
   });
 
   describe(`dotSolDomainToWallet`, () => {
@@ -84,6 +100,19 @@ describe(`wallet names to addresses`, () => {
       expect(walletAddressAndProfilePicture).toEqual({
         profilePicture: null,
         walletAddress: null,
+      });
+    });
+  });
+
+  describe(`dotOttrToWalletAddress`, () => {
+    test("aleksei.ottr resolves", async () => {
+      const walletAddressAndProfilePicture = await dotOttrToWalletAddress(
+        "aleksei"
+      );
+      expect(walletAddressAndProfilePicture).toEqual({
+        profilePicture:
+          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles/6bb58431-fefc-45ae-8fda-16bb393cc942",
+        walletAddress: "GXwCSk2RPHDFHPzBSo42CSKU1D94FNoo6qpbZFQG8TfK",
       });
     });
   });
