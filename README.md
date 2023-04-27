@@ -5,7 +5,7 @@
 
 <img src="docs/logo.png" alt="A human wearing a badge that says Hello my name is Solana Wallet Names" />
 
-This package resolves **wallet names** (like `mikemaccana.sol`) to **wallet addresses** (like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`) (and the reverse - wallet addresses to names) across the entire Solana ecosystem, including **8 different name services** and **5 different profile picture (PFP) services**.
+This package resolves **wallet names** (like `mikemaccana.sol`) to **wallet addresses** (like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`) (and the reverse - wallet addresses to names) across the entire Solana ecosystem, including **✨8✨ different name services** and **✨5✨ different profile picture (PFP) services**.
 
 Supported **wallet names** are:
 
@@ -42,7 +42,7 @@ npm i "@portal-payments/solana-wallet-names"
 
 All you need is a Solana `Connection` object. Optionally, you can also get a [Twitter bearer token](https://developer.twitter.com/en/docs/authentication/oauth-2-0/bearer-tokens) - not including `twitterBearerToken` will simply disable Twitter results.
 
-## Wallet name ➡️ wallet address (and profile picture)
+## 🧑🏻‍🦱➡️🔡🖼️ Wallet name to wallet address (and profile picture)
 
 If you have a wallet name, like `mikemaccana.abc`, and you want to get an address and profile picture:
 
@@ -75,7 +75,7 @@ If either (or both) aren't found, they will be `null`. We only error for actual 
 }
 ```
 
-## Wallet address ➡️ wallet name (and profile picture)
+## 🔡➡️🧑🏻‍🦱🖼️ Wallet address to wallet name (and profile picture)
 
 If you have a wallet address, like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`, and you want to get an address and profile picture:
 
