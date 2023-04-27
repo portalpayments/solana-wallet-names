@@ -1,6 +1,6 @@
 {
   "name": "@portal-payments/solana-wallet-names",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Resolves Solana wallet names (.abc, .backpack, .bonk, .glow, .sol, .ottr, .poor and @twitter) to wallet addresses and back.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -25,7 +25,8 @@
     "PFP",
     "name service",
     "sns",
-    "ans"
+    "ans",
+    "username"
   ],
   "author": "Mike MacCana <mike@getportal.app>",
   "license": "MIT",
