@@ -7,7 +7,7 @@ import {
   reverseLookup,
 } from "@bonfida/spl-name-service";
 import { getDomainKeySync, NameRegistryState } from "@bonfida/spl-name-service";
-import * as http from "./http-client";
+import * as http from "fetch-unfucked";
 import { TldParser, MainDomain as ANSMainDomain } from "@onsol/tldparser";
 import type { ProfilePictureResponse } from "./types";
 // Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
