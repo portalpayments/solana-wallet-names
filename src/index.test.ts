@@ -1,6 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
 import {
+  ALEKSEIS_WALLET,
   ARMANIS_WALLET,
   KRISPYS_WALLET,
   MIKES_WALLET,
@@ -107,12 +108,12 @@ describe(`wallet names to addresses`, () => {
   describe(`dotOttrToWalletAddress`, () => {
     test("aleksei.ottr resolves", async () => {
       const walletAddressAndProfilePicture = await dotOttrToWalletAddress(
-        "aleksei"
+        "aleksei.ottr"
       );
       expect(walletAddressAndProfilePicture).toEqual({
         profilePicture:
           "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles/6bb58431-fefc-45ae-8fda-16bb393cc942",
-        walletAddress: "GXwCSk2RPHDFHPzBSo42CSKU1D94FNoo6qpbZFQG8TfK",
+        walletAddress: ALEKSEIS_WALLET,
       });
     });
   });
@@ -254,6 +255,18 @@ describe(`wallet names to addresses`, () => {
         walletAddress: KRISPYS_WALLET,
         profilePicture:
           "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/T18Bw-hRAxRhUnNJ2Cx7bplQ1NqrfJCYrVeo7GzBtBs",
+      });
+    });
+
+    test(`aleksei.ottr`, async () => {
+      const result = await walletNameToAddressAndProfilePicture(
+        connection,
+        "aleksei.ottr"
+      );
+      expect(result).toEqual({
+        walletAddress: ALEKSEIS_WALLET,
+        profilePicture:
+          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles/6bb58431-fefc-45ae-8fda-16bb393cc942",
       });
     });
 

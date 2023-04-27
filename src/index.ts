@@ -114,7 +114,8 @@ export const dotOttrResponseHTMLToObject = (
 export const dotOttrToWalletAddress = async (
   dotOttrDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
-  const { body } = await http.get(`https://ottr.id/${dotOttrDomain}`);
+  const dotOttrUserName = removeExtension(dotOttrDomain, "ottr");
+  const { body } = await http.get(`https://ottr.id/${dotOttrUserName}`);
   const object = dotOttrResponseHTMLToObject(body);
 
   const customer = object?.props?.pageProps?.customer;
@@ -446,14 +447,20 @@ export const walletNameToAddressAndProfilePicture = async (
       walletName
     );
   }
+
   if (walletName.endsWith(".glow")) {
     walletAddressAndProfilePicture = await dotGlowToWalletAddress(walletName);
   }
+
   if (walletName.endsWith(".backpack")) {
     walletAddressAndProfilePicture = await dotBackpackToWalletAddress(
       walletName,
       jwt
     );
+  }
+
+  if (walletName.endsWith(".ottr")) {
+    walletAddressAndProfilePicture = await dotOttrToWalletAddress(walletName);
   }
 
   // ANS seems to be the nicest maintained and less land-grab naming service
