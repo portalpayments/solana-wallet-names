@@ -31,11 +31,16 @@ const getTwitterProfilePicture = async (
   twitterBearerToken: string,
   twitterHandle: string
 ) => {
-  const responseBody = await http.get(
+  const { body } = await http.get(
     `https://api.twitter.com/2/users/by/username/${twitterHandle}?user.fields=profile_image_url`,
     { Authorization: `Bearer ${twitterBearerToken}` }
   );
-  return responseBody?.data?.profile_image_url || null;
+  if (typeof body === "string") {
+    throw new Error(
+      `Twitter API returned a string instead of an object: ${body}`
+    );
+  }
+  return body?.data?.profile_image_url || null;
 };
 
 const removeExtension = (string: string, extension: string): string => {
@@ -102,11 +107,11 @@ export const dotGlowToWalletAddress = async (
   dotGlowDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
   const dotGlowUserName = removeExtension(dotGlowDomain, "glow");
-  const responseBody = await http.get(
+  const { body } = await http.get(
     `https://api.glow.app/glow-id/resolve?handle=${dotGlowUserName}`
   );
-  const walletAddress = responseBody?.info?.resolved || null;
-  const profilePicture = responseBody?.info?.image || null;
+  const walletAddress = body?.info?.resolved || null;
+  const profilePicture = body?.info?.image || null;
   return {
     walletAddress,
     profilePicture,
@@ -115,12 +120,12 @@ export const dotGlowToWalletAddress = async (
 
 export const walletAddressToDotGlow = async (wallet: PublicKey) => {
   const walletString = wallet.toBase58();
-  const responseBody = await http.get(
+  const { body } = await http.get(
     `https://api.glow.app/glow-id/resolve?wallet=${walletString}`
   );
-  const dotGlowUsername = responseBody?.info?.handle || null;
+  const dotGlowUsername = body?.info?.handle || null;
   const walletName = `${dotGlowUsername}.glow`;
-  const profilePicture = responseBody?.info?.image || null;
+  const profilePicture = body?.info?.image || null;
   return {
     walletName,
     profilePicture,
@@ -205,12 +210,12 @@ export const dotBackpackToWalletAddress = async (
     // However that endpoint does not include profile pictures, however it also does not require a JWT
     //
     // Have chased in the Backpack Discord
-    const responseBody = await http.get(
+    const { body } = await http.get(
       `https://backpack-api.xnfts.dev/users/${dotBackpackUserName}`
     );
     // publicKeys isn't an array of publicKeys
     // it's an array of objects with a publicKey property. Euw.
-    const publicKeysDetails = responseBody?.publicKeys || null;
+    const publicKeysDetails = body?.publicKeys || null;
     const firstPublicKeyDetails = publicKeysDetails[0];
     const walletAddress = firstPublicKeyDetails.publicKey || null;
     return {
@@ -224,14 +229,13 @@ export const dotBackpackToWalletAddress = async (
   // '&blockchain=solana&limit=6' but the typo version is what backpack app actually uses
   // I suspect the endpoint below API searches only *other* users, ie not the user owning the JWT
   // hence 0 results for mikemaccana
-  const responseBody = await http.get(
+  const { body } = await http.get(
     `https://backpack-api.xnfts.dev/users?usernamePrefix=${dotBackpackUserName}&blockchain=solanalimit=6`,
     {
       cookie: `jwt=${jwt}`,
     }
   );
-
-  const users = responseBody?.users || null;
+  const users = body?.users || null;
 
   if (!users) {
     return {
@@ -301,10 +305,10 @@ export const walletAddressToDotBackpack = async (
   }
   const walletString = wallet.toBase58();
   const backpackAPIEndpoint = `https://backpack-api.xnfts.dev/users?usernamePrefix=${walletString}`;
-  const responseBody = await http.get(backpackAPIEndpoint, {
+  const { body } = await http.get(backpackAPIEndpoint, {
     cookie: `jwt=${jwt}`,
   });
-  const users = responseBody?.users || null;
+  const users = body?.users || null;
   if (!users?.length) {
     return {
       walletName: null,

@@ -16,6 +16,13 @@ export const get = async (
   return fetchUnfucked(uri, "GET", headers, null, forceResponseContentType);
 };
 
+interface UnfuckedResponse {
+  status: string;
+  headers: Record<string, unknown>;
+  // Yes really 'any' - unknown cannot have arbitrary sub keys.
+  body: any;
+}
+
 export const post = async (
   uri: string,
   headers: Record<string, string> | null = null,
@@ -39,13 +46,19 @@ export const fetchUnfucked = async (
   if (headers && Object.keys(headers).length) {
     options.headers = headers;
   }
-  const response = await fetch(uri, options);
+  const rawResponse = await fetch(uri, options);
+
+  const cleanResponse: UnfuckedResponse = {
+    status: rawResponse.statusText,
+    headers: Object.fromEntries(rawResponse.headers.entries()),
+    body: null,
+  };
 
   let contentType: string = CONTENT_TYPES.JSON;
   if (forceResponseContentType) {
     contentType = forceResponseContentType;
   } else {
-    let contentTypeHeader = response.headers.get("Content-Type");
+    let contentTypeHeader = rawResponse.headers.get("Content-Type");
     if (contentTypeHeader) {
       // Just in case the Content-Type header is malformed
       const parts = contentTypeHeader.split(";");
@@ -61,11 +74,13 @@ export const fetchUnfucked = async (
     contentType === CONTENT_TYPES.TEXT ||
     contentType === CONTENT_TYPES.HTML
   ) {
-    const htmlOrText = await response.text();
-    return htmlOrText;
+    const htmlOrText = await rawResponse.text();
+    cleanResponse.body = htmlOrText;
+    return cleanResponse;
   }
   if (contentType === CONTENT_TYPES.JSON) {
-    return response.json();
+    cleanResponse.body = await rawResponse.json();
+    return cleanResponse;
   }
   throw new Error(`Don't know how to decode this contentType: ${contentType}`);
 };
