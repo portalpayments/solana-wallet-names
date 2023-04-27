@@ -30,7 +30,7 @@ Ensure users are aware of this:
 > **Warning**
 > There is no guarantee that (walletName) represents a particular individual or organisation.
 
-Well be releasing some other tech 🔜 to assert individual or organisation identity and get profile pictures that are proven match the identity of the wallet holder. 
+We'll be releasing some other tech 🔜 to assert individual or organisation identity and get profile pictures that are proven match the identity of the wallet holder. 
 
 # Installation
 
