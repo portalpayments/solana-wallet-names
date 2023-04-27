@@ -88,7 +88,7 @@ describe(`wallet names to addresses`, () => {
     });
   });
 
-  describe(`dotBackpackToWallet`, () => {
+  describe(`dotBackpackToWalletAddress`, () => {
     test(`armani.backpack resolves`, async () => {
       const walletAddressAndProfilePicture = await dotBackpackToWalletAddress(
         "armani.backpack",
@@ -101,7 +101,7 @@ describe(`wallet names to addresses`, () => {
     });
   });
 
-  describe(`dotGlowToWallet`, () => {
+  describe(`dotGlowToWalletAddress`, () => {
     test(`mikemaccana.glow resolves`, async () => {
       const walletAddressAndProfilePicture = await dotGlowToWalletAddress(
         "mikemaccana.glow"
@@ -114,7 +114,7 @@ describe(`wallet names to addresses`, () => {
     });
   });
 
-  describe(`dotAbcDotBonkOrDotPoorDomainToWallet`, () => {
+  describe(`dotAnythingToWalletAddress`, () => {
     test(`mikemaccana.abc resolves`, async () => {
       const walletAddressAndProfilePicture = await dotAnythingToWalletAddress(
         connection,
@@ -127,7 +127,7 @@ describe(`wallet names to addresses`, () => {
     });
   });
 
-  describe(`atTwitterToWallet`, () => {
+  describe(`twitterHandleToWalletAddress`, () => {
     test(`Finds @mikemaccana's wallet`, async () => {
       const walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
         connection,
