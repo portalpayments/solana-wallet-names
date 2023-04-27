@@ -5,3 +5,5 @@ export const ARMANIS_WALLET = "DcpYXJsWBgkV6kck4a7cWBg6B4epPeFRCMZJjxudGKh4";
 export const ALEKSEIS_WALLET = "GXwCSk2RPHDFHPzBSo42CSKU1D94FNoo6qpbZFQG8TfK";
 export const WALLET_WITH_NO_NAME =
   "Adyu2gX2zmLmHbgAoiXe2n4egp6x8PS7EFAqcFvhqahz";
+export const FANE_ABC_PRETENDING_TO_BE_SBF =
+  "4tSrBeyzLrttU38jg7fw2oa3Zk8wAFapK9gAzYFozN5B";

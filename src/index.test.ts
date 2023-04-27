@@ -3,6 +3,7 @@ import type { Connection } from "@solana/web3.js";
 import {
   ALEKSEIS_WALLET,
   ARMANIS_WALLET,
+  FANE_ABC_PRETENDING_TO_BE_SBF,
   KRISPYS_WALLET,
   MIKES_WALLET,
   VIDORS_WALLET,
@@ -222,6 +223,17 @@ describe(`wallet names to addresses`, () => {
       });
     });
 
+    test(`sbf.poor`, async () => {
+      const result = await walletNameToAddressAndProfilePicture(
+        connection,
+        "sbf.poor"
+      );
+      expect(result).toEqual({
+        walletAddress: FANE_ABC_PRETENDING_TO_BE_SBF,
+        profilePicture: null,
+      });
+    });
+
     test(`mikemaccana.sol`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
@@ -432,6 +444,16 @@ describe(`wallet addresses to names`, () => {
   });
 
   describe(`walletAddressToNameAndProfilePicture`, () => {
+    test(`solves mystery`, async () => {
+      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
+        connection,
+        new PublicKey("4uUwQyiXK2BN8PXSzbcvVTbPJL2jjc9NZambw6pJQErs")
+      );
+      expect(nameAndProfilePicture).toEqual({
+        profilePicture: null,
+        walletName: null,
+      });
+    });
     test(`mike's wallet address returns his .abc name and his Solana PFP`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
         connection,
