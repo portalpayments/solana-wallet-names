@@ -7,6 +7,7 @@ import {
   KRISPYS_WALLET,
   MIKES_WALLET,
   VIDORS_WALLET,
+  VLADS_WALLET,
   WALLET_WITH_NO_NAME,
 } from "./constants";
 import {
@@ -264,7 +265,7 @@ describe(`wallet names to addresses`, () => {
         "vlad.poor"
       );
       expect(result).toEqual({
-        walletAddress: null,
+        walletAddress: VLADS_WALLET,
         profilePicture: null,
       });
     });
