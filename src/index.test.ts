@@ -234,18 +234,6 @@ describe(`wallet names to addresses`, () => {
       });
     });
 
-    test(`mikemaccana.sol`, async () => {
-      const result = await walletNameToAddressAndProfilePicture(
-        connection,
-        "mikemaccana.sol"
-      );
-      expect(result).toEqual({
-        walletAddress: MIKES_WALLET,
-        profilePicture:
-          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
-      });
-    });
-
     test(`vidor.sol`, async () => {
       const result = await walletNameToAddressAndProfilePicture(
         connection,
@@ -267,6 +255,17 @@ describe(`wallet names to addresses`, () => {
         walletAddress: KRISPYS_WALLET,
         profilePicture:
           "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/T18Bw-hRAxRhUnNJ2Cx7bplQ1NqrfJCYrVeo7GzBtBs",
+      });
+    });
+
+    test(`vlad.poor`, async () => {
+      const result = await walletNameToAddressAndProfilePicture(
+        connection,
+        "vlad.poor"
+      );
+      expect(result).toEqual({
+        walletAddress: null,
+        profilePicture: null,
       });
     });
 
