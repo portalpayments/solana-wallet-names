@@ -5,7 +5,7 @@
 
 <img src="docs/logo.png" alt="A human wearing a badge that says Hello my name is Solana Wallet Names" />
 
-This package resolves **wallet names** (like `mikemaccana.sol`) to **wallet addresses** (like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`) (and the reverse - wallet addresses to names) across the entire Solana ecosystem, including **✨8✨ different name services** and **✨5✨ different profile picture (PFP) services**.
+This package resolves **wallet names** (like `mikemaccana.sol`) to **wallet addresses** (like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`) across **the entire Solana ecosystem**, including **✨8✨ different name services** and **✨5✨ different profile picture (PFP) services**. Reverse mapping (wallet addresses to names) is also supported in most cases.
 
 Supported **wallet names** are:
 
