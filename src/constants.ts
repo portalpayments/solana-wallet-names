@@ -6,5 +6,7 @@ export const ALEKSEIS_WALLET = "GXwCSk2RPHDFHPzBSo42CSKU1D94FNoo6qpbZFQG8TfK";
 export const VLADS_WALLET = "CN6DaNfWGev45AHuP5qEVr422hjgNLgj96uaqiDeRRvx";
 export const WALLET_WITH_NO_NAME =
   "Adyu2gX2zmLmHbgAoiXe2n4egp6x8PS7EFAqcFvhqahz";
-export const FANE_ABC_PRETENDING_TO_BE_SBF =
-  "4tSrBeyzLrttU38jg7fw2oa3Zk8wAFapK9gAzYFozN5B";
+export const FAKE_SBF = "HtnrRusyXGW35zcDSAnbiYBWdcCvNfZYxiQnC7KLG8Ew";
+
+export const SECOND = 1000;
+export const SECONDS = SECOND;

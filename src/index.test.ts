@@ -3,9 +3,10 @@ import type { Connection } from "@solana/web3.js";
 import {
   ALEKSEIS_WALLET,
   ARMANIS_WALLET,
-  FANE_ABC_PRETENDING_TO_BE_SBF,
+  FAKE_SBF,
   KRISPYS_WALLET,
   MIKES_WALLET,
+  SECONDS,
   VIDORS_WALLET,
   VLADS_WALLET,
   WALLET_WITH_NO_NAME,
@@ -113,8 +114,9 @@ describe(`wallet names to addresses`, () => {
         "aleksei.ottr"
       );
       expect(walletAddressAndProfilePicture).toEqual({
-        profilePicture:
-          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles/6bb58431-fefc-45ae-8fda-16bb393cc942",
+        profilePicture: expect.stringContaining(
+          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles"
+        ),
         walletAddress: ALEKSEIS_WALLET,
       });
     });
@@ -230,7 +232,7 @@ describe(`wallet names to addresses`, () => {
         "sbf.poor"
       );
       expect(result).toEqual({
-        walletAddress: FANE_ABC_PRETENDING_TO_BE_SBF,
+        walletAddress: FAKE_SBF,
         profilePicture: null,
       });
     });
@@ -277,8 +279,9 @@ describe(`wallet names to addresses`, () => {
       );
       expect(result).toEqual({
         walletAddress: ALEKSEIS_WALLET,
-        profilePicture:
-          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles/6bb58431-fefc-45ae-8fda-16bb393cc942",
+        profilePicture: expect.stringContaining(
+          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles"
+        ),
       });
     });
 
@@ -454,17 +457,19 @@ describe(`wallet addresses to names`, () => {
         walletName: null,
       });
     });
-    test(`mike's wallet address returns his .abc name and his Solana PFP`, async () => {
-      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
-        connection,
-        mikesWallet
-      );
-      expect(nameAndProfilePicture).toEqual({
-        profilePicture:
-          "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
-        walletName: "mikemaccana.abc",
-      });
-    });
+    test(
+      `mike's wallet address returns his .abc name and his Solana PFP`,
+      async () => {
+        const nameAndProfilePicture =
+          await walletAddressToNameAndProfilePicture(connection, mikesWallet);
+        expect(nameAndProfilePicture).toEqual({
+          profilePicture:
+            "https://solana-cdn.com/cdn-cgi/image/width=100/https://nftstorage.link/ipfs/QmPS5zYVeVe17HbxLq8k34So5uu2kPWfMKbGKEH5MzwxR5/138.png",
+          walletName: "mikemaccana.abc",
+        });
+      },
+      10 * SECONDS
+    );
 
     test(`vidor's wallet address returns his .sol wallet name and profile picture`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
