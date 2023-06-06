@@ -1,6 +1,6 @@
 {
   "name": "@portal-payments/solana-wallet-names",
-  "version": "1.4.3",
+  "version": "2.0.0",
   "description": "Resolves Solana wallet names (.abc, .backpack, .bonk, .glow, .sol, .ottr, .poor and @twitter) to wallet addresses and back.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -42,7 +42,6 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@bonfida/spl-name-service": "^0.1.66",
     "@onsol/tldparser": "^0.5.3",
     "@solana/web3.js": "^1.73.3",
     "@solflare-wallet/pfp": "^0.1.0",

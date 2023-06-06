@@ -1,12 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
-import {
-  getAllDomains,
-  getTwitterRegistry,
-  getHandleAndRegistryKey,
-  reverseLookup,
-} from "@bonfida/spl-name-service";
-import { getDomainKeySync, NameRegistryState } from "@bonfida/spl-name-service";
+
 import * as http from "fetch-unfucked";
 import { TldParser, MainDomain as ANSMainDomain } from "@onsol/tldparser";
 import type { ProfilePictureResponse } from "./types";
@@ -26,22 +20,6 @@ interface WalletAddressAndProfilePicture {
   walletAddress: string | null;
   profilePicture: string | null;
 }
-
-const getTwitterProfilePicture = async (
-  twitterBearerToken: string,
-  twitterHandle: string
-) => {
-  const { body } = await http.get(
-    `https://api.twitter.com/2/users/by/username/${twitterHandle}?user.fields=profile_image_url`,
-    { Authorization: `Bearer ${twitterBearerToken}` }
-  );
-  if (typeof body === "string") {
-    throw new Error(
-      `Twitter API returned a string instead of an object: ${body}`
-    );
-  }
-  return body?.data?.profile_image_url || null;
-};
 
 const removeExtension = (string: string, extension: string): string => {
   const extensionWithDot = `.${extension}`;
@@ -166,13 +144,21 @@ export const dotSolToWalletAddress = async (
   dotSolDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
   try {
-    const { pubkey } = getDomainKeySync(dotSolDomain);
-    const owner = (
-      await NameRegistryState.retrieve(connection, pubkey)
-    ).registry.owner.toBase58();
-    //
+    const { body } = await http.get(
+      `https://sns-sdk-proxy.bonfida.workers.dev/resolve/${dotSolDomain}`
+    );
+
+    let walletAddress = null;
+
+    const result = body?.result;
+
+    // Bonfida's API is garbage
+    if (result !== "Domain not found") {
+      walletAddress = result;
+    }
+
     return {
-      walletAddress: owner,
+      walletAddress,
       profilePicture: null,
     };
   } catch (thrownObject) {
@@ -193,20 +179,23 @@ export const walletAddressToDotSol = async (
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
   try {
-    const ownerWallet = new PublicKey(wallet);
+    const { body } = await http.get(
+      // See https://github.com/Bonfida/sns-sdk#sdk-proxy
+      // There's a 'favorite-domain' endpoint butmost SNS users haven't set up a
+      // favorite domain, as the UI to do so is complex
+      // `https://sns-sdk-proxy.bonfida.workers.dev/favorite-domain/${wallet.toBase58()}`
+      `https://sns-sdk-proxy.bonfida.workers.dev/domains/${wallet.toBase58()}`
+    );
 
-    const allDomainKeys = await getAllDomains(connection, ownerWallet);
-    if (!allDomainKeys.length) {
-      return {
-        walletName: null,
-        profilePicture: null,
-      };
+    let walletName = null;
+
+    const firstDomainNoSuffix = body?.result?.[0]?.domain;
+
+    if (firstDomainNoSuffix) {
+      walletName = `${firstDomainNoSuffix}.sol`;
     }
-    const firstDomainKey = allDomainKeys[0];
-    const domainKeyName = await reverseLookup(connection, firstDomainKey);
-    const domainName = `${domainKeyName}.sol`;
     return {
-      walletName: domainName,
+      walletName,
       profilePicture: null,
     };
   } catch (thrownObject) {
@@ -353,85 +342,15 @@ export const walletAddressToDotBackpack = async (
   };
 };
 
-export const twitterHandleToWalletAddress = async (
-  connection: Connection,
-  twitterBearerToken: string | null = null,
-  twitterHandle: string
-): Promise<WalletAddressAndProfilePicture> => {
-  // Normalise the @ symbol. We don't need it.
-
-  if (twitterHandle.startsWith("@")) {
-    twitterHandle = twitterHandle.slice(1);
-  }
-  try {
-    const registry = await getTwitterRegistry(connection, twitterHandle);
-    let profilePicture = null;
-
-    if (twitterBearerToken) {
-      if (twitterBearerToken) {
-        profilePicture = await getTwitterProfilePicture(
-          twitterBearerToken,
-          twitterHandle
-        );
-      }
-    }
-    return {
-      walletAddress: registry.owner.toBase58(),
-      profilePicture,
-    };
-  } catch (thrownObject) {
-    const error = thrownObject as Error;
-    if (error.message === "Invalid name account provided") {
-      return {
-        walletAddress: null,
-        profilePicture: null,
-      };
-    }
-    throw error;
-  }
-};
-
-export const walletAddressToTwitterHandle = async (
-  connection: Connection,
-  wallet: PublicKey
-) => {
-  try {
-    const [handle, _RegistryKey] = await getHandleAndRegistryKey(
-      connection,
-      wallet
-    );
-
-    return `@${handle}`;
-  } catch (thrownObject) {
-    const error = thrownObject as Error;
-    // They SNS user just doesn't have a Twitter reverse mapping set up
-    // This is super common
-    if (error.message === "Invalid reverse Twitter account provided") {
-      return null;
-    }
-    // An unexpected error
-    throw error;
-  }
-};
-
 export const walletNameToAddressAndProfilePicture = async (
   connection: Connection,
   walletName: string,
-  twitterBearerToken: string | null = null,
   jwt: string | null = null
 ): Promise<WalletAddressAndProfilePicture> => {
   let walletAddressAndProfilePicture: WalletAddressAndProfilePicture = {
     walletAddress: null,
     profilePicture: null,
   };
-
-  if (walletName.startsWith("@")) {
-    walletAddressAndProfilePicture = await twitterHandleToWalletAddress(
-      connection,
-      twitterBearerToken,
-      walletName
-    );
-  }
 
   // All domain name services have at least two parts
   const parts = walletName.split(".");

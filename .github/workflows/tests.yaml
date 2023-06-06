@@ -17,7 +17,6 @@ jobs:
 
     env:
       RPC_URL: ${{ secrets.RPC_URL }}
-      TWITTER_BEARER_TOKEN: ${{ secrets.TWITTER_BEARER_TOKEN }}
       BACKPACK_JWT: ${{ secrets.BACKPACK_JWT }}
 
     steps:
