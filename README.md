@@ -103,8 +103,8 @@ I'm a poor startup founder. Send me some tokens! `mikemaccana.sol`.
 ## Limits
 
 - In cases where addresses can have multiple account names, only the first or 'main' account name is returned.
-- Twitter to address lookup is handled through Bonfida `.sol` domains. Very few people with `.sol` domains have set up Twitter handle to `.sol` domain handling. If you do own a `.sol` domain it [setting up Twitter to .sol mapping](https://docs.bonfida.org/collection/solana-name-service-twitter) takes less than five minutes.
 - Solana PFP Standard uses the Netscape 'broken image' icon for missing images. This is ugly, so instead we return `null`.
+- Ottr is only on the backend for now
 - Backpack and Ottr do not currently have wallet address to name mappings available.
 
 # Contributing 
