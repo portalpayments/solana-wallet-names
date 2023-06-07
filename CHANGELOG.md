@@ -1,8 +1,13 @@
 # Changelog 
 
+## 2.0 - 2023-06-07
+
+- Significantly reduce size by using the Bonfida REST API rather than @bonfida/spl-name-service library, which was large and broke between releassed, with no changelog updates to describe what broke.
+- Remove Twitter support - in practice very few people used Bonfida's Twitter naming.
+
 ## 1.4 - 2023-04-27
 
-- Add preliminary `.ottr` support
+- Add preliminary `.ottr` support (backend only)
 - Externalize http client.
 
 ## 1.3 - 2023-04-24
