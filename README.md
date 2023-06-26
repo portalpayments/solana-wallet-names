@@ -10,11 +10,10 @@ Supported **wallet names** are:
  - **.backpack** (using Backpack for profile pictures)
  - **.bonk** (using Solana PFP standard for profile pictures)
  - **.glow** (using Glow for profile pictures)
- - **.ottr** (using Ottr for profile pictures)
  - **.poor** (using Solana PFP standard for profile pictures)
  - **.sol** (using Solana PFP standard for profile pictures)
- - **@twitter** (using Twitter standard for profile pictures)
 
+We've had experimental support for `.ottr` too, it will be coming back in future soon using a real API.
 ## Note: wallet names do not assert identity
 
 Wallet names are a convenient alternative for wallet addresses. However **wallet names do not assert real world identity**. Most of services used in this library do not check the real-world identity of people registering wallet names.

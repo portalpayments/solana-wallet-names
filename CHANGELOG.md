@@ -1,5 +1,10 @@
 # Changelog 
 
+## 1.1 - 2023-06-26
+
+- Remove preliminary Ottr support (was not stable) pending proper API access.
+- Integration test updates
+
 ## 2.0 - 2023-06-07
 
 - Significantly reduce size by using the Bonfida REST API rather than @bonfida/spl-name-service library, which was large and broke between releassed, with no changelog updates to describe what broke.
