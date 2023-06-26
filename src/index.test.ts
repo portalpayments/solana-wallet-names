@@ -305,7 +305,8 @@ describe(`wallet addresses to names`, () => {
         profilePicture: null,
         walletName: "mikemaccana.sol",
       });
-    });
+    // Bonfida is unreasonably slow
+    }, 10 * SECONDS);
 
     test(
       `vidor's wallet resolves to .sol domain`,
