@@ -2,7 +2,7 @@ import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
 
 import * as http from "fetch-unfucked";
-import { TldParser, MainDomain as ANSMainDomain } from "@onsol/tldparser";
+import { TldParser as ANSTLDParser, MainDomain as ANSMainDomain } from "@onsol/tldparser";
 import type { ProfilePictureResponse } from "./types";
 // Name here is way too generic. We already have our own getProfilePictureUsingSolanaPFPStandard to let's call this the 'Upstream' version
 import { getProfilePicture as getProfilePictureUsingSolanaPFPStandardUpstream } from "@solflare-wallet/pfp";
@@ -34,7 +34,7 @@ export const dotAnythingToWalletAddress = async (
   connection: Connection,
   ansDomainName: string
 ): Promise<WalletAddressAndProfilePicture> => {
-  const parser = new TldParser(connection);
+  const parser = new ANSTLDParser(connection);
   const ownerPublicKey = await parser.getOwnerFromDomainTld(ansDomainName);
   return {
     walletAddress: ownerPublicKey?.toBase58() || null,
@@ -50,7 +50,7 @@ export const walletAddressToDotAnything = async (
   connection: Connection,
   wallet: PublicKey
 ): Promise<WalletNameAndProfilePicture> => {
-  const parser = new TldParser(connection);
+  const parser = new ANSTLDParser(connection);
   // Assume this is an ANS Main Domain - a main domain is the domain that a wallet address
   // with multiple names will resolve to.
   let mainDomain = {} as ANSMainDomain;
