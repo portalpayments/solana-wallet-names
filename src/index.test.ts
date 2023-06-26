@@ -25,6 +25,10 @@ import {
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
 
+// This could be a rate limit etc. 
+// TODO: speak to Bonfida people.
+const BONFIDA_IS_SLOW = 10 * SECONDS
+
 const log = console.log;
 
 dotenv.config();
@@ -262,7 +266,7 @@ describe(`wallet addresses to names`, () => {
         walletName: "mikemaccana.sol",
       });
     // Bonfida is unreasonably slow
-    }, 10 * SECONDS);
+    }, BONFIDA_IS_SLOW);
 
     test(
       `vidor's wallet resolves to .sol domain`,
@@ -273,7 +277,7 @@ describe(`wallet addresses to names`, () => {
           walletName: "vidor.sol",
         });
       },
-      10 * SECONDS
+      BONFIDA_IS_SLOW
     );
 
     test(`krispy's wallet resolves to .sol domain`, async () => {
@@ -340,7 +344,7 @@ describe(`wallet addresses to names`, () => {
           walletName: "mikemaccana.abc",
         });
       },
-      10 * SECONDS
+      BONFIDA_IS_SLOW
     );
 
     test(`vidor's wallet address returns his .sol wallet name and profile picture`, async () => {
@@ -353,7 +357,7 @@ describe(`wallet addresses to names`, () => {
           "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/i1I1GXelcZaEe5n0_TcVbVEEdz4mQR5lMWR2f6OplTs",
         walletName: "vidor.sol",
       });
-    });
+    }, 10 *SECONDS );
 
     test(`armani's wallet address returns his wallet name`, async () => {
       const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
