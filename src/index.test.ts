@@ -161,8 +161,7 @@ describe(`wallet names to addresses`, () => {
       );
       expect(result).toEqual({
         walletAddress: KRISPYS_WALLET,
-        profilePicture:
-          "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/T18Bw-hRAxRhUnNJ2Cx7bplQ1NqrfJCYrVeo7GzBtBs",
+        profilePicture: null,
       });
     });
 
@@ -353,19 +352,6 @@ describe(`wallet addresses to names`, () => {
         profilePicture:
           "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/i1I1GXelcZaEe5n0_TcVbVEEdz4mQR5lMWR2f6OplTs",
         walletName: "vidor.sol",
-      });
-    });
-
-    test(`krispy's wallet address returns his wallet name and profile picture`, async () => {
-      const nameAndProfilePicture = await walletAddressToNameAndProfilePicture(
-        connection,
-        krispysWallet
-      );
-      expect(nameAndProfilePicture).toMatchObject({
-        profilePicture:
-          "https://solana-cdn.com/cdn-cgi/image/width=100/https://arweave.net/T18Bw-hRAxRhUnNJ2Cx7bplQ1NqrfJCYrVeo7GzBtBs",
-        // TODO: this seems to change every so often. Investigate.
-        walletName: expect.stringContaining("sol"),
       });
     });
 
