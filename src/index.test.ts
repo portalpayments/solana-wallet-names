@@ -25,9 +25,9 @@ import {
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
 
-// This could be a rate limit etc. 
-// TODO: speak to Bonfida people.
-const BONFIDA_IS_SLOW = 10 * SECONDS
+// This is absurdly slow, but is likely a rate limit, ie due ot the amount of requests submitted during unit tests. 
+// TODO: speak to Bonfida people and confirm.
+const BONFIDA_IS_SLOW = 20 * SECONDS
 
 const log = console.log;
 
