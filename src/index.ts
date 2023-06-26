@@ -79,36 +79,8 @@ export const walletAddressToDotAnything = async (
   };
 };
 
-export const dotOttrResponseHTMLToObject = (
-  html: string
-): Record<string, any> => {
-  //TODO: remove once Ottr make API available
-  var newDocument = new DOMParser().parseFromString(html, "text/html");
-  const nextJSDataElement = newDocument.getElementById("__NEXT_DATA__");
-  if ( !nextJSDataElement ) {
-    throw new Error("Could not find __NEXT_DATA__ element in Ottr HTML response");
-  }
-  const jsonInsideHTML = nextJSDataElement.textContent;
-  return JSON.parse(jsonInsideHTML);
-};
 
-export const dotOttrToWalletAddress = async (
-  dotOttrDomain: string
-): Promise<WalletAddressAndProfilePicture> => {
-  const dotOttrUserName = removeExtension(dotOttrDomain, "ottr");
-  const { body } = await http.get(`https://ottr.id/${dotOttrUserName}`);
-  const object = dotOttrResponseHTMLToObject(body);
 
-  const customer = object?.props?.pageProps?.customer;
-
-  const walletAddress = customer?.wallet || null;
-  const profilePicture = customer?.picture || null;
-
-  return {
-    walletAddress,
-    profilePicture,
-  };
-};
 
 // https://docs.glow.app/reference/resolve-glow-id
 // The 'API' node module has a bunch of issues running in the browser so just use http module directly
@@ -379,9 +351,7 @@ export const walletNameToAddressAndProfilePicture = async (
     );
   }
 
-  if (walletName.endsWith(".ottr")) {
-    walletAddressAndProfilePicture = await dotOttrToWalletAddress(walletName);
-  }
+ 
 
   // ANS seems to be the nicest maintained and less land-grab naming service
   // It also has multiple TLDs, so we will fall back to it for all other domains.

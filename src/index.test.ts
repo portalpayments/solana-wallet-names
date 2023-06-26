@@ -1,7 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
 import {
-  ALEKSEIS_WALLET,
   ARMANIS_WALLET,
   FAKE_SBF,
   KRISPYS_WALLET,
@@ -22,12 +21,9 @@ import {
   walletAddressToDotSol,
   walletAddressToDotBackpack,
   walletAddressToNameAndProfilePicture,
-  dotOttrToWalletAddress,
 } from ".";
 import { connect } from "./connect";
 import * as dotenv from "dotenv";
-
-import { JSDOM } from "jsdom";
 
 const log = console.log;
 
@@ -58,19 +54,6 @@ describe(`wallet names to addresses`, () => {
   let connection: Connection;
   beforeAll(async () => {
     connection = await connect(rpcURL);
-
-    // Used for tests only, because node doesn't have a DOM parser built in
-    // TODO: remove once Ottr makes API available
-    class DOMParser {
-      constructor() {
-        return this;
-      }
-      parseFromString(string, contentType = "text/html") {
-        return new JSDOM(string, { contentType }).window.document;
-      }
-    }
-
-    globalThis.DOMParser = DOMParser;
   });
 
   describe(`dotSolDomainToWallet`, () => {
@@ -95,19 +78,6 @@ describe(`wallet names to addresses`, () => {
     });
   });
 
-  describe(`dotOttrToWalletAddress`, () => {
-    test("aleksei.ottr resolves", async () => {
-      const walletAddressAndProfilePicture = await dotOttrToWalletAddress(
-        "aleksei.ottr"
-      );
-      expect(walletAddressAndProfilePicture).toEqual({
-        profilePicture: expect.stringContaining(
-          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles"
-        ),
-        walletAddress: ALEKSEIS_WALLET,
-      });
-    });
-  });
 
   describe(`dotBackpackToWalletAddress`, () => {
     test(`armani.backpack resolves`, async () => {
@@ -204,19 +174,6 @@ describe(`wallet names to addresses`, () => {
       expect(result).toEqual({
         walletAddress: VLADS_WALLET,
         profilePicture: null,
-      });
-    });
-
-    test(`aleksei.ottr`, async () => {
-      const result = await walletNameToAddressAndProfilePicture(
-        connection,
-        "aleksei.ottr"
-      );
-      expect(result).toEqual({
-        walletAddress: ALEKSEIS_WALLET,
-        profilePicture: expect.stringContaining(
-          "https://s3.us-west-1.amazonaws.com/ottr.finance/profiles"
-        ),
       });
     });
 
