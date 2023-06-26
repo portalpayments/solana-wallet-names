@@ -84,8 +84,11 @@ export const dotOttrResponseHTMLToObject = (
 ): Record<string, any> => {
   //TODO: remove once Ottr make API available
   var newDocument = new DOMParser().parseFromString(html, "text/html");
-  const jsonInsideHTML =
-    newDocument.getElementById("__NEXT_DATA__").textContent;
+  const nextJSDataElement = newDocument.getElementById("__NEXT_DATA__");
+  if ( !nextJSDataElement ) {
+    throw new Error("Could not find __NEXT_DATA__ element in Ottr HTML response");
+  }
+  const jsonInsideHTML = nextJSDataElement.textContent;
   return JSON.parse(jsonInsideHTML);
 };
 
