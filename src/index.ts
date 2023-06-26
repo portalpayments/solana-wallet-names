@@ -140,7 +140,6 @@ export const walletAddressToDotGlow = async (wallet: PublicKey) => {
 
 // See https://www.quicknode.com/guides/solana-development/accounts-and-data/how-to-query-solana-naming-service-domains-sol/#set-up-your-environment
 export const dotSolToWalletAddress = async (
-  connection: Connection,
   dotSolDomain: string
 ): Promise<WalletAddressAndProfilePicture> => {
   try {
@@ -362,7 +361,6 @@ export const walletNameToAddressAndProfilePicture = async (
   // and is complex to set up, but was more popular
   if (walletName.endsWith(".sol")) {
     walletAddressAndProfilePicture = await dotSolToWalletAddress(
-      connection,
       walletName
     );
   }

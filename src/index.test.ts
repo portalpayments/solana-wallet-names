@@ -76,7 +76,6 @@ describe(`wallet names to addresses`, () => {
   describe(`dotSolDomainToWallet`, () => {
     test(`mikemaccana.sol resolves`, async () => {
       const walletAddressAndProfilePicture = await dotSolToWalletAddress(
-        connection,
         "mikemaccana.sol"
       );
       expect(walletAddressAndProfilePicture).toEqual({
@@ -87,7 +86,6 @@ describe(`wallet names to addresses`, () => {
 
     test(`unregistered-domain-for-unit-tests.sol returns null`, async () => {
       const walletAddressAndProfilePicture = await dotSolToWalletAddress(
-        connection,
         "unregistered-domain-for-unit-tests.sol"
       );
       expect(walletAddressAndProfilePicture).toEqual({
