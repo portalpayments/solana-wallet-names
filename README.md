@@ -4,29 +4,36 @@
 
 This package resolves **wallet names** (like `mikemaccana.sol`) to **wallet addresses** (like `5FHwkrdxntdK24hgQU8qgBjn35Y1zwhz1GZwCkP2UJnM`) across **the entire Solana ecosystem**, including **✨8✨ different name services** and **✨5✨ different profile picture (PFP) services**. Reverse mapping (wallet addresses to names) is also supported in most cases.
 
-Supported **wallet names** are:
+| Name      | Name to Address | Address to Name | PFP source          |
+| --------- | :-------------: | --------------: | ------------------- |
+| .abc      |       ✅        |              ✅ | Solana PFP Standard |
+| .backpack |       ✅        |              ❌ | Backpack            |
+| .bonk     |       ✅        |              ✅ | Solana PFP Standard |
+| .glow     |       ✅        |              ✅ | Glow ID             |
+| .poor     |       ✅        |              ✅ | Solana PFP Standard |
+| .sol      |       ✅        |              ✅ | Solana PFP Standard |
+| .ottr     |       🔜        |              🔜 | 🔜                  |
 
- - **.abc** (using Solana PFP standard for profile pictures)
- - **.backpack** (using Backpack for profile pictures)
- - **.bonk** (using Solana PFP standard for profile pictures)
- - **.glow** (using Glow for profile pictures)
- - **.poor** (using Solana PFP standard for profile pictures)
- - **.sol** (using Solana PFP standard for profile pictures)
+Note to wallets that don't include address-to-name mappings (currently just Backpack): [not implementing address to name mappings does not help user privacy](https://twitter.com/mikemaccana/status/1674758907657441280). All it does it means your users see an ugly set of characters when they log into a dApp rather than their wallet name.
 
-We've had experimental support for `.ottr` too, it will be coming back in future soon using a real API.
+We've had experimental support for `.ottr` too, it will be coming back in future soon.
+
+We previously supported `@twitter` using Bonfida's API, however in practice very few Solana users have bothered mapping their Twitter accounts to their wallets so we ended up removing this support. If you have any thoughts about this please let us know!
+
 ## Note: wallet names do not assert identity
 
 Wallet names are a convenient alternative for wallet addresses. However **wallet names do not assert real world identity**. Most of services used in this library do not check the real-world identity of people registering wallet names.
- - Many wallet names that sounds like real world people and organisations are not those organisation - `barclays.sol` isn't Barclays, `cashapp.sol` isn't cashapp, `joemccann.sol` isn't the well known Solana investor. This isn't just Solana, all blockchain name services and DNS itself operate this way. Having a particular name registered simply means the holder was the first person to register that name.
- - Wallet name services that include given and family names do not check that the person has identification matching the given and family names.
- - Profile picture services do not check that the person depicted matches the owner of the wallet
+
+- Many wallet names that sounds like real world people and organisations are not those organisation - `barclays.sol` isn't Barclays, `cashapp.sol` isn't cashapp, `joemccann.sol` isn't the well known Solana investor. This isn't just Solana, all blockchain name services and DNS itself operate this way. Having a particular name registered simply means the holder was the first person to register that name.
+- Wallet name services that include given and family names do not check that the person has identification matching the given and family names.
+- Profile picture services do not check that the person depicted matches the owner of the wallet
 
 Ensure users are aware of this:
 
 > **Warning**
 > There is no guarantee that (walletName) represents a particular individual or organisation.
 
-We'll be releasing some other tech 🔜 to assert individual or organisation identity and get profile pictures that are proven match the identity of the wallet holder. 
+We'll be releasing some other tech 🔜 to assert individual or organisation identity and get profile pictures that are proven match the identity of the wallet holder.
 
 # Installation
 
@@ -45,12 +52,13 @@ If you have a wallet name, like `mikemaccana.abc`, and you want to get an addres
 ```typescript
 import { walletNameToAddressAndProfilePicture } from "@portal-payments/solana-wallet-names";
 
-const walletAddressAndProfilePicture = await walletNameToAddressAndProfilePicture(
-  // A Solana connection
-  connection,
-  // One of: .abc .backpack .bonk .glow .poor .sol or @twitter
-  "mikemaccana.abc"
-);
+const walletAddressAndProfilePicture =
+  await walletNameToAddressAndProfilePicture(
+    // A Solana connection
+    connection,
+    // One of: .abc .backpack .bonk .glow .poor .sol or @twitter
+    "mikemaccana.abc"
+  );
 ```
 
 `walletAddressAndProfilePicture` will look like:
@@ -106,13 +114,13 @@ I'm a poor startup founder. Send me some tokens! `mikemaccana.sol`.
 - Ottr is only on the backend for now
 - Backpack and Ottr do not currently have wallet address to name mappings available.
 
-# Contributing 
+# Contributing
 
 This library is designed to support all Solana naming services - as new services are added over time, we'd love you to contribute them here.
 
 Please see [Portal Wallet Coding Guidelines](https://github.com/portalpayments/portalwallet/blob/main/CODING_GUIDELINES.md) when writing your PRs.
 
-File issues in the **Issues** tab in GitHub 
+File issues in the **Issues** tab in GitHub
 
 # Changelog
 
